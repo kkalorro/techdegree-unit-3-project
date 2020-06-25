@@ -36,24 +36,30 @@ function toggleVisibility(element, bool) {
     }
 }
 
-// Show shirt theme requirement and hide shirt color options
-function resetShirtOptions () {
-    
-    // // Colors label selector
-    // const selectColorsLabel = document.querySelector('#colors-js-puns').firstElementChild;
-    // // Show shirt theme requirement
-    // selectColorsLabel.innerHTML = 'Color: <b><i>(Please select a T-shirt theme)</i></b>';
 
-    // Remove all shirt options from select dropdown
+// Initial classes for Shirts
+function initializeShirts() {
     for (let i = 0; i < selectColorOptions.length; i++) {
-        // Skip the no design option
-        if (selectColorsSelect[i].value != 'nodesign') {
-            toggleVisibility(selectColorOptions[i], true);
+        // Shorthand variable for current option
+        const option = selectColorOptions[i];
+        const val = option.value;
+    
+        // Give these values the class 'pun'
+        if (val === 'cornflowerblue' || val === 'darkslategrey' || val === 'gold') {
+            option.classList.add('pun');
+        // Give these values the class 'heart'
+        } else if (val === 'tomato' || val === 'steelblue' || val === 'dimgrey') {
+            option.classList.add('heart');
         }
     }
+}
 
-    // Remove the initial color select value
-    // selectColorsSelect.value = 'Please select a T-shirt theme';
+// Hide shirt color options
+function resetShirtOptions () {
+    // Remove all shirt options from select dropdown
+    for (let i = 0; i < selectColorOptions.length; i++) {
+        toggleVisibility(selectColorOptions[i], true);
+    }
 }
 
 
@@ -61,11 +67,17 @@ function initializePage() {
     // Focus on the first input box
     document.querySelector('input').focus();
 
+    // Initial classes for shirts
+    initializeShirts();
+
     // Hide other title textbox
     toggleVisibility(selectOtherTitle, true);
 
     // Initial settings for shirt
     resetShirtOptions();
+
+    // Add shirt theme requirement
+    selectColorsSelect.querySelector('#no-design').hidden = false;
 
     // Hide payment info divs
     toggleVisibility(selectCreditCard, true);
