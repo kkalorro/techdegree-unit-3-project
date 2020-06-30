@@ -23,6 +23,9 @@ const selectColorsOptions = document.querySelectorAll('#color option');
 // Activities field selector
 const selectActivitiesField = document.querySelector('.activities');
 
+// Payment dropdown selector
+const selectPayment = document.querySelector('#payment');
+
 // Credit card div selector
 const selectCreditCard = document.querySelector('#credit-card');
 // PayPal div selector
@@ -30,12 +33,16 @@ const selectPayPal = document.querySelector('#paypal');
 // Bitcoin div selector
 const selectBitcoin = document.querySelector('#bitcoin');
 
+
+// 'data-cost' sum in Activities
+let cost = 0;
+
 ///////////////
 // Functions //
 ///////////////
 
 // Element visibility toggler
-function toggleVisibility(element, bool) {
+function toggleHidden(element, bool) {
     if (bool === true) {
         element.classList.add('is-hidden');
     } else {
@@ -76,14 +83,15 @@ function initializeShirts() {
 }
 
 // Hide shirt color options and show dropdown requirements
-function resetShirtOptions () {
+function resetShirtOptions() {
 
     // Remove first child of shirt design dropdown
-    selectDesignSelect.firstElementChild.classList.add('is-hidden');
+    toggleHidden(selectDesignSelect.firstElementChild, true);
+    // selectDesignSelect.firstElementChild.classList.add('is-hidden');
 
     // Remove all shirt options from select dropdown
     for (let i = 0; i < selectColorsOptions.length; i++) {
-        toggleVisibility(selectColorsOptions[i], true);
+        toggleHidden(selectColorsOptions[i], true);
     }
 
         // Remove label header
@@ -94,6 +102,11 @@ function resetShirtOptions () {
 
 }
 
+function resetPaymentDivs() {
+    toggleHidden(selectCreditCard, true);
+    toggleHidden(selectPayPal, true);
+    toggleHidden(selectBitcoin, true);
+}
 
 function initializePage() {
     // Focus on the first input box
@@ -104,7 +117,7 @@ function initializePage() {
 
     // Create other title textbox then hide it until needed
     initializeOtherJob();
-    toggleVisibility(selectOtherTitle, true);
+    toggleHidden(selectOtherTitle, true);
 
     // Initial settings for shirt
     resetShirtOptions();
@@ -112,10 +125,11 @@ function initializePage() {
     // Add shirt theme requirement
     // selectColorsSelect.querySelector('#no-design').hidden = false;
 
+    // Remove first option in payment dropdown
+    toggleHidden(selectPayment.firstElementChild, true);
+
     // Hide payment info divs
-    toggleVisibility(selectCreditCard, true);
-    toggleVisibility(selectPayPal, true);
-    toggleVisibility(selectBitcoin, true);
+    resetPaymentDivs();
 }
 
 /////////////
@@ -131,9 +145,9 @@ initializePage();
 // Open the other title textbox when dropdown is set to other
 selectTitle.addEventListener('change', (e) => {
     if (e.target.value === 'other') {
-        toggleVisibility(selectOtherTitle, false);
+        toggleHidden(selectOtherTitle, false);
     } else {
-        toggleVisibility(selectOtherTitle, true);
+        toggleHidden(selectOtherTitle, true);
     }
 });
 
@@ -143,7 +157,7 @@ selectDesignSelect.addEventListener('change', (e) => {
     const val = e.target.value;
 
     // Hide the initial design option
-    selectDesignSelect.firstElementChild.hidden = true;
+    // selectDesignSelect.firstElementChild.hidden = true;
 
     // Remove shirt design requirement from label
     selectColorsLabel.innerHTML = 'Color:';
@@ -163,7 +177,7 @@ selectDesignSelect.addEventListener('change', (e) => {
                 firstOption = selectColorsOptions[i].value;
             }
             // Make current option visable
-            toggleVisibility(selectColorsOptions[i], false);
+            toggleHidden(selectColorsOptions[i], false);
         // If a heart option
         } else if (val === 'heart js' && selectColorsOptions[i].classList.contains('heart')) {
             // Save the first option's value
@@ -171,48 +185,112 @@ selectDesignSelect.addEventListener('change', (e) => {
                 firstOption = selectColorsOptions[i].value;
             }
             // Make current option visable
-            toggleVisibility(selectColorsOptions[i], false);
+            toggleHidden(selectColorsOptions[i], false);
         }
     }
 
     selectColorsSelect.value = firstOption;
-   
-    // Somewhere here we need to show the very first entry.
-
 });
 
-// Activities
+////////////////
+// Activities //
+////////////////
 
 // Create a cost textbox
 const costDiv = document.createElement('div');
 costDiv.innerHTML = '<b>Total:</b> <span id="cost"></span>';
 selectActivitiesField.appendChild(costDiv);
+toggleHidden(selectActivitiesField.lastElementChild, true);
 
 // Cost span selector
-const cost = costDiv.lastElementChild;
-cost.textContent = 123;
+const selectCost = costDiv.lastElementChild;
+
+// Do not show array containing 'data-day-and-time' values
+const doNotEnable = [];
 
 selectActivitiesField.addEventListener('change', (e) => {
-    let total = 0;
 
     // Get all the inputs in selectActiviesField
     const inputs = selectActivitiesField.getElementsByTagName('input');
 
-    // Collect all the Input Checks = true and get sum of data-cost
-    for (let i = 0; i < inputs.length; i++) {
-        if (inputs[i].checked === true) {
-            total += parseInt(inputs[i].getAttribute('data-cost'));
+    // Current target
+    const targ = e.target;
+    const checked = targ.checked;
+    const price = targ.getAttribute('data-cost');
+    const timestamp = targ.getAttribute('data-day-and-time');
+
+    // if e.target is checked
+    if (checked) {
+        // Update cost
+        cost += parseInt(price);
+        // check all other inputs for matching 'data-day-and-time'
+        for (let i = 0; i < inputs.length; i++) {
+            if (timestamp === inputs[i].getAttribute('data-day-and-time') && targ.name != inputs[i].name) {
+                // disable and classify matches
+                inputs[i].disabled = true;
+                inputs[i].parentElement.classList.add('disabled');
+            }
+        }
+    } else {
+        // Update cost
+        cost -= parseInt(price);
+        // check all other inputs for matching 'data-day-and-time'
+        for (let i = 0; i < inputs.length; i++) {
+            if (timestamp === inputs[i].getAttribute('data-day-and-time') && targ.name != inputs[i].name) {
+                // enable and classify matches
+                inputs[i].disabled = false;
+                inputs[i].parentElement.classList.remove('disabled');
+            }
         }
     }
 
     // Parse into $
-    let totalParse = total.toString();
+    let costParsed = cost.toString();
     const regex = /^(\d*)$/;
     const replacement = '$$$1\.00';
-    cost.textContent = totalParse.replace(regex, replacement);
-    
-    // Disable conflicting schedules
-    //selectActivitiesField.children[1].firstElementChild.disabled = true
-    // Add additional font coloring
 
+    // If nothing is checked then hide cost
+    if (cost === 0) {
+        toggleHidden(selectActivitiesField.lastElementChild, true);
+    // If cost isn't showing, show it
+    } else if (selectActivitiesField.lastElementChild.classList.contains('is-hidden')) {
+        toggleHidden(selectActivitiesField.lastElementChild, false);
+    }
+    selectCost.textContent = costParsed.replace(regex, replacement);
+});
+
+/////////////
+// Payment //
+/////////////
+
+
+
+selectPayment.addEventListener('change', (e) => {
+    // remove first entry
+    toggleHidden(selectPayment.firstElementChild, true);
+
+    // if id:payment value =
+    switch (selectPayment.value) {
+        // credit card
+        case 'credit card':
+            // hide all payment divs
+            resetPaymentDivs();
+            // show id:credit-card
+            toggleHidden(selectCreditCard, false);
+            break;
+        // paypal
+        case 'paypal':
+            // hide all payment divs
+            resetPaymentDivs();
+            // show id:paypal
+            toggleHidden(selectPayPal, false);
+            break;
+        // bitcoin
+        case 'bitcoin':
+            // hide all payment divs
+            resetPaymentDivs();
+            // show id:bitcoin
+            toggleHidden(selectBitcoin, false);
+            break;
+    }
 });
