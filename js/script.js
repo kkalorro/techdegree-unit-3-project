@@ -134,8 +134,11 @@ function initializePage() {
     // Add shirt theme requirement
     // selectColorsSelect.querySelector('#no-design').hidden = false;
 
-    // Remove first option in payment dropdown
+    // Hide first option in payment dropdown
     toggleHidden(selectPaymentSelect.firstElementChild, true);
+
+    // Select credit card option from start
+    selectPaymentSelect.value = 'credit card';
 
     // Hide payment info divs
     resetPaymentDivs();
