@@ -4,6 +4,10 @@
 
 // User name textbox selector
 const selectUserName = document.querySelector('#name');
+// User mail textbox selector
+const selectUserMail = document.querySelector('#mail');
+
+
 // Job title dropdown selector
 const selectTitle = document.querySelector('#title');
 // Other job title textbox selector
@@ -23,8 +27,11 @@ const selectColorsOptions = document.querySelectorAll('#color option');
 // Activities field selector
 const selectActivitiesField = document.querySelector('.activities');
 
+// Get all the inputs in selectActiviesField
+const selectActivitiesInputs = selectActivitiesField.getElementsByTagName('input');
+
 // Payment dropdown selector
-const selectPayment = document.querySelector('#payment');
+const selectPaymentSelect = document.querySelector('#payment');
 
 // Credit card div selector
 const selectCreditCard = document.querySelector('#credit-card');
@@ -33,6 +40,8 @@ const selectPayPal = document.querySelector('#paypal');
 // Bitcoin div selector
 const selectBitcoin = document.querySelector('#bitcoin');
 
+// Submit button selector
+const selectSubmitButton = document.querySelector('form button');
 
 // 'data-cost' sum in Activities
 let cost = 0;
@@ -41,14 +50,14 @@ let cost = 0;
 // Functions //
 ///////////////
 
-// Element visibility toggler
-function toggleHidden(element, bool) {
-    if (bool === true) {
-        element.classList.add('is-hidden');
-    } else {
-        element.classList.remove('is-hidden');
-    }
-}
+// Add or remove class to hide element
+toggleHidden = (element, bool) => { bool ? element.classList.add('is-hidden') : element.classList.remove('is-hidden'); };
+
+// Add or remove class to make element's text red
+toggleInvalidText = (element, bool) => { bool ? element.classList.add('is-invalid-text') : element.classList.remove('is-invalid-text') };
+
+// Add or remove class to make element's border red
+toggleInvalidBorder = (element, bool) => { bool ? element.classList.add('is-invalid-border') : element.classList.remove('is-invalid-border') };
 
 // Create a custom textbox after the title select
 function initializeOtherJob() {
@@ -126,7 +135,7 @@ function initializePage() {
     // selectColorsSelect.querySelector('#no-design').hidden = false;
 
     // Remove first option in payment dropdown
-    toggleHidden(selectPayment.firstElementChild, true);
+    toggleHidden(selectPaymentSelect.firstElementChild, true);
 
     // Hide payment info divs
     resetPaymentDivs();
@@ -210,9 +219,6 @@ const doNotEnable = [];
 
 selectActivitiesField.addEventListener('change', (e) => {
 
-    // Get all the inputs in selectActiviesField
-    const inputs = selectActivitiesField.getElementsByTagName('input');
-
     // Current target
     const targ = e.target;
     const checked = targ.checked;
@@ -224,22 +230,22 @@ selectActivitiesField.addEventListener('change', (e) => {
         // Update cost
         cost += parseInt(price);
         // check all other inputs for matching 'data-day-and-time'
-        for (let i = 0; i < inputs.length; i++) {
-            if (timestamp === inputs[i].getAttribute('data-day-and-time') && targ.name != inputs[i].name) {
+        for (let i = 0; i < selectActivitiesInputs.length; i++) {
+            if (timestamp === selectActivitiesInputs[i].getAttribute('data-day-and-time') && targ.name != selectActivitiesInputs[i].name) {
                 // disable and classify matches
-                inputs[i].disabled = true;
-                inputs[i].parentElement.classList.add('disabled');
+                selectActivitiesInputs[i].disabled = true;
+                selectActivitiesInputs[i].parentElement.classList.add('disabled');
             }
         }
     } else {
         // Update cost
         cost -= parseInt(price);
         // check all other inputs for matching 'data-day-and-time'
-        for (let i = 0; i < inputs.length; i++) {
-            if (timestamp === inputs[i].getAttribute('data-day-and-time') && targ.name != inputs[i].name) {
+        for (let i = 0; i < selectActivitiesInputs.length; i++) {
+            if (timestamp === selectActivitiesInputs[i].getAttribute('data-day-and-time') && targ.name != selectActivitiesInputs[i].name) {
                 // enable and classify matches
-                inputs[i].disabled = false;
-                inputs[i].parentElement.classList.remove('disabled');
+                selectActivitiesInputs[i].disabled = false;
+                selectActivitiesInputs[i].parentElement.classList.remove('disabled');
             }
         }
     }
@@ -265,12 +271,12 @@ selectActivitiesField.addEventListener('change', (e) => {
 
 
 
-selectPayment.addEventListener('change', (e) => {
+selectPaymentSelect.addEventListener('change', (e) => {
     // remove first entry
-    toggleHidden(selectPayment.firstElementChild, true);
+    toggleHidden(selectPaymentSelect.firstElementChild, true);
 
     // if id:payment value =
-    switch (selectPayment.value) {
+    switch (selectPaymentSelect.value) {
         // credit card
         case 'credit card':
             // hide all payment divs
@@ -293,4 +299,82 @@ selectPayment.addEventListener('change', (e) => {
             toggleHidden(selectBitcoin, false);
             break;
     }
+});
+
+///////
+// Validation after submit button
+////
+
+selectSubmitButton.addEventListener('click', (e) => {
+    // Remove default submit button behavior
+    e.preventDefault();
+
+    // Case insensitive name pattern is alphanumerical inputs
+    const regexName = /[a-z]+/i;
+
+    // Case insensitive mail pattern is standard email format
+    const regexEmail = /^[^@]+\@[^@.]+\.[a-z]+$/i;
+
+    // Activities legend selector
+    const selectActivitiesLegend = selectActivitiesField.firstElementChild;
+
+    // Activities checked counter
+    let checkCount = 0;
+
+    // Credit card input selector
+    const selectCreditCardSelect = selectCreditCard.querySelector('#cc-num');
+
+    // Zip code input selector
+    const selectZipCodeSelect = selectCreditCard.querySelector('#zip');
+
+    // CVV input selector
+    const selectCVVSelect = selectCreditCard.querySelector('#cvv');
+
+    function toggleInvalid(element, bool) {
+        // Apply red border on element
+        toggleInvalidBorder(element, bool);
+        // Apply red text to preceeding element
+        toggleInvalidText(element.previousElementSibling, bool);
+    }
+
+    // Highlight invalid name field in red
+    !regexName.test(selectUserName.value) ? toggleInvalid(selectUserName, true) : toggleInvalid(selectUserName, false);
+
+    // Highlight invalid mail field in red
+    !regexEmail.test(selectUserMail.value) ? toggleInvalid(selectUserMail, true) : toggleInvalid(selectUserMail, false);
+
+    // Highlight invalid shirt design dropdown in red
+    selectDesignSelect.selectedIndex <= 0 ? toggleInvalid(selectDesignSelect, true) : toggleInvalid(selectDesignSelect, false);
+
+    // Highlight invalid shirt color dropdown in red
+    selectColorsSelect.selectedIndex < 0 ? toggleInvalid(selectColorsSelect, true) : toggleInvalid(selectColorsSelect, false)
+
+    // Search all activities
+    for (let i = 0; i < selectActivitiesInputs.length; i++) {
+        // If activity checked, increment checkCount by 1
+        if (selectActivitiesInputs[i].checked) {
+            checkCount++;
+        }
+    }
+
+    // Highlight activities field in red if no activities checked
+    !checkCount ? toggleInvalidText(selectActivitiesLegend, true) : toggleInvalidText(selectActivitiesLegend, false);
+
+    // If payment type not selected
+    !selectPaymentSelect.selectedIndex ? toggleInvalidText(selectPaymentSelect.previousElementSibling, true) :
+        toggleInvalidText(selectPaymentSelect.previousElementSibling, false);
+
+    // Credit card patterns are all numeric characters
+    const regexCreditCard = /^\d+$/;
+
+    // (Extra) Parse credit number to only digits
+
+    regexCreditCard.test(selectCreditCardSelect.value) && selectCreditCardSelect.value.length === 12 ? toggleInvalid(selectCreditCardSelect, false) :
+        toggleInvalid(selectCreditCardSelect, true);
+    // if zip code is not a 5 digit number
+    regexCreditCard.test(selectZipCodeSelect.value) && selectZipCodeSelect.value.length === 5 ? toggleInvalid(selectZipCodeSelect, false) :
+        toggleInvalid(selectZipCodeSelect, true);
+    // if CVV is not a 3 or 4 digit number
+    regexCreditCard.test(selectCVVSelect.value) && selectCVVSelect.value.length === 3 || selectCVVSelect.value.length === 4 ? toggleInvalid(selectCVVSelect, false) :
+        toggleInvalid(selectCVVSelect, true);
 });

@@ -170,10 +170,6 @@ option {
 	border-radius: 4px;
 }
 
-.disabled {
-	color: #808080;
-}
-
 /* ================================= 
   Helper Classes
 ==================================== */
@@ -186,6 +182,19 @@ option {
   content: " ";
   display: table;
   clear: both;
+}
+
+.disabled {
+	color: #808080;
+}
+
+.is-invalid-text {
+	color: red;
+	font-weight: bold;
+}
+
+.is-invalid-border {
+	border-color: red;
 }
 
 /* ================================= 
