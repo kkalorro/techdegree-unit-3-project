@@ -147,6 +147,7 @@ option {
 
 .shirt-box {
 	width: 100%;
+	/* width: auto; */
 	padding: 5px;
 	background: rgba(255, 255, 255, 0.1);
 	border-radius: 4px;
