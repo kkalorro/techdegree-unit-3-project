@@ -26,36 +26,6 @@ const selectUserName = document.querySelector('#name');
 // User mail textbox selector
 const selectUserMail = document.querySelector('#mail');
 
-function test() {
-    const selectInputs = document.querySelectorAll('input');
-
-    // console.log(selectInputs);
-
-    for (let i = 0; i < selectInputs.length; i++) {
-        const span = document.createElement('span');
-        span.className = 'error';
-        span.textContent = 'test';
-
-        // selectInputs[i].parentElement.appendChild(span);
-
-        
-
-        if (selectInputs[i].getAttribute('type') != 'checkbox') {
-            console.log(selectInputs[i]);
-            selectInputs[i].parentElement.insertBefore(span, selectInputs[i].nextElementSibling);
-        }
-    }
-}
-
-// // Create a span with a error class
-// const span = document.createElement('span');
-
-// span.className = 'error';
-// span.textContent = 'test';
-
-// selectUserName.parentElement.appendChild(span);
-// // selectUserName.parentElement.insertBefore(span, selectUserName);
-
 // Job title dropdown selector
 const selectTitle = document.querySelector('#title');
 // Other job title textbox selector
@@ -74,6 +44,9 @@ const selectColorsOptions = document.querySelectorAll('#color option');
 
 // Activities field selector
 const selectActivitiesField = document.querySelector('.activities');
+
+// Activities legend selector
+const selectActivitiesLegend = selectActivitiesField.firstElementChild;
 
 // Get all the inputs in selectActiviesField
 const selectActivitiesInputs = selectActivitiesField.getElementsByTagName('input');
@@ -106,6 +79,84 @@ toggleInvalidText = (element, bool) => { bool ? element.classList.add('is-invali
 
 // Add or remove class to make element's border red
 toggleInvalidBorder = (element, bool) => { bool ? element.classList.add('is-invalid-border') : element.classList.remove('is-invalid-border') };
+
+function initializeErrorMessages() {
+    // Input elements selector
+    const selectInputs = document.querySelectorAll('input');
+    // Container for error message
+    const msg = 'Error';
+    errorMessages = [
+        // Index 0: name input error
+        'Error: Must input at least 1 alphabet character.',
+        // Index 1: mail input error
+        'Error: Must input a valid email address.',
+        // Index 2: custom job role input error
+        'Error: Must input a custom Job Role.',
+        // Index 3: shirt design error
+        'Error: Must select a Shirt Design.',
+        // Index 4: activities error
+        'Error: At least one Activity must be selected.',
+        // Index 5: credit card error
+        'Error: Credit Card numbers must contain 13 through 16 digits.',
+        // Index 6: zip code error
+        'Error: Zip code must be 5-digits.',
+        // Index 7: cvv error
+        'Error: CVV must contain 3 or 4 digits.'
+    ];
+
+    // Create error messages for inputs
+    for (let i = 0; i < selectInputs.length; i++) {
+        // Create error message for non-checkbox inputs
+        if (selectInputs[i].getAttribute('type') != 'checkbox') {
+            const span = document.createElement('span');
+            span.className = 'error';
+
+            // Assign error message based on element's id
+            switch (selectInputs[i].id) {
+                case 'name':
+                    span.textContent = errorMessages[0];
+                    break;
+                case 'mail':
+                    span.textContent = errorMessages[1];
+                    break;
+                case 'other-title':
+                    span.textContent = errorMessages[2];
+                    break;
+                case 'cc-num':
+                    span.textContent = errorMessages[5];
+                    break;
+                case 'zip':
+                span.textContent = errorMessages[6];
+                break;
+                case 'cvv':
+                    span.textContent = errorMessages[7];
+                    break;
+            }
+            
+
+            console.log(selectInputs[i]);
+
+            // Place error message after input
+            selectInputs[i].parentElement.insertBefore(span, selectInputs[i].nextElementSibling);
+        }
+    }
+
+    // Create error message for shirt design when no selection is chosen
+    if (selectDesignSelect) {
+        const span = document.createElement('span');
+        span.className = 'error';
+        span.textContent = msg;
+        selectDesignSelect.parentElement.insertBefore(span, selectDesignSelect.nextElementSibling);
+    }
+
+    // Create error message for activities when no boxes are checked
+    if (selectActivitiesLegend) {
+        const span = document.createElement('span');
+        span.className = 'error';
+        span.textContent = msg;
+        selectActivitiesLegend.parentElement.insertBefore(span, selectActivitiesLegend.nextElementSibling);
+    }
+}
 
 // Initial classes for Shirts
 function initializeShirts() {
@@ -338,9 +389,6 @@ selectSubmitButton.addEventListener('click', (e) => {
     // Remove default submit button behavior
     e.preventDefault();
 
-
-    // Activities legend selector
-    const selectActivitiesLegend = selectActivitiesField.firstElementChild;
     // Credit card input selector
     const selectCreditCardSelect = selectCreditCard.querySelector('#cc-num');
     // Zip code input selector

@@ -72,6 +72,10 @@ legend {
 	margin-bottom: 1.125em;
 }
 
+legend + .error {
+	margin-top: -1.125em;
+}
+
 input[type="text"],
 input[type="email"],
 legend {
@@ -176,7 +180,7 @@ option {
 	/* background-color: khaki; */
 	color: red;
 	font-weight: bold;
-	/* border: 1px blue solid; */
+	border: 1px blue solid;
 	margin-bottom: 1.125em;
 	
 }
