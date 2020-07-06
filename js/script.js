@@ -21,6 +21,41 @@
 // Init //
 //////////
 
+// User name textbox selector
+const selectUserName = document.querySelector('#name');
+// User mail textbox selector
+const selectUserMail = document.querySelector('#mail');
+
+function test() {
+    const selectInputs = document.querySelectorAll('input');
+
+    // console.log(selectInputs);
+
+    for (let i = 0; i < selectInputs.length; i++) {
+        const span = document.createElement('span');
+        span.className = 'error';
+        span.textContent = 'test';
+
+        // selectInputs[i].parentElement.appendChild(span);
+
+        
+
+        if (selectInputs[i].getAttribute('type') != 'checkbox') {
+            console.log(selectInputs[i]);
+            selectInputs[i].parentElement.insertBefore(span, selectInputs[i].nextElementSibling);
+        }
+    }
+}
+
+// // Create a span with a error class
+// const span = document.createElement('span');
+
+// span.className = 'error';
+// span.textContent = 'test';
+
+// selectUserName.parentElement.appendChild(span);
+// // selectUserName.parentElement.insertBefore(span, selectUserName);
+
 // Job title dropdown selector
 const selectTitle = document.querySelector('#title');
 // Other job title textbox selector
@@ -48,7 +83,7 @@ const selectPaymentSelect = document.querySelector('#payment');
 
 // Credit card div selector
 const selectCreditCard = document.querySelector('#credit-card');
-// PayPal div selector
+// PayPal div selectordocument.querySelectorAll('input')
 const selectPayPal = document.querySelector('#paypal');
 // Bitcoin div selector
 const selectBitcoin = document.querySelector('#bitcoin');
@@ -303,10 +338,7 @@ selectSubmitButton.addEventListener('click', (e) => {
     // Remove default submit button behavior
     e.preventDefault();
 
-    // User name textbox selector
-    const selectUserName = document.querySelector('#name');
-    // User mail textbox selector
-    const selectUserMail = document.querySelector('#mail');
+
     // Activities legend selector
     const selectActivitiesLegend = selectActivitiesField.firstElementChild;
     // Credit card input selector

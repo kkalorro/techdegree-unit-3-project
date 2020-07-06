@@ -86,7 +86,7 @@ label {
 
 input,
 select {
-	margin-bottom: 1.125em;	
+	/* margin-bottom: 1.125em; */
 }
 
 input {
@@ -169,6 +169,16 @@ option {
 	padding: 5px;
 	background: rgba(255, 255, 255, 0.1);
 	border-radius: 4px;
+}
+
+.error {
+	display: block;
+	/* background-color: khaki; */
+	color: red;
+	font-weight: bold;
+	/* border: 1px blue solid; */
+	margin-bottom: 1.125em;
+	
 }
 
 /* ================================= 
