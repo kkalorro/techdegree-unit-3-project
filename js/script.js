@@ -75,10 +75,21 @@ let cost = 0;
 toggleHidden = (element, bool) => { bool ? element.classList.add('is-hidden') : element.classList.remove('is-hidden'); };
 
 // Add or remove class to make element's text red
-toggleInvalidText = (element, bool) => { bool ? element.classList.add('is-invalid-text') : element.classList.remove('is-invalid-text') };
+toggleInvalidText = (element, bool) => { 
+    bool ? element.classList.add('is-invalid-text') : element.classList.remove('is-invalid-text');
+    // Toggle error message after legend elements
+    if (element.tagName === 'LEGEND') {
+        (bool) ? toggleHidden(element.nextElementSibling, false) : toggleHidden(element.nextElementSibling, true);
+    }
+    
+};
 
 // Add or remove class to make element's border red
-toggleInvalidBorder = (element, bool) => { bool ? element.classList.add('is-invalid-border') : element.classList.remove('is-invalid-border') };
+toggleInvalidBorder = (element, bool) => {
+    bool ? element.classList.add('is-invalid-border') : element.classList.remove('is-invalid-border');
+    // Toggle error message after element
+    (bool) ? toggleHidden(element.nextElementSibling, false) : toggleHidden(element.nextElementSibling, true);
+};
 
 function initializeErrorMessages() {
     // Input elements selector
@@ -109,7 +120,7 @@ function initializeErrorMessages() {
         // Create error message for non-checkbox inputs
         if (selectInputs[i].getAttribute('type') != 'checkbox') {
             const span = document.createElement('span');
-            span.className = 'error';
+            span.classList.add('error', 'is-hidden');
 
             // Assign error message based on element's id
             switch (selectInputs[i].id) {
@@ -132,9 +143,6 @@ function initializeErrorMessages() {
                     span.textContent = errorMessages[7];
                     break;
             }
-            
-
-            console.log(selectInputs[i]);
 
             // Place error message after input
             selectInputs[i].parentElement.insertBefore(span, selectInputs[i].nextElementSibling);
@@ -144,16 +152,17 @@ function initializeErrorMessages() {
     // Create error message for shirt design when no selection is chosen
     if (selectDesignSelect) {
         const span = document.createElement('span');
-        span.className = 'error';
-        span.textContent = msg;
+        span.classList.add('error', 'is-hidden');
+        span.textContent = errorMessages[3];
         selectDesignSelect.parentElement.insertBefore(span, selectDesignSelect.nextElementSibling);
     }
 
     // Create error message for activities when no boxes are checked
     if (selectActivitiesLegend) {
         const span = document.createElement('span');
-        span.className = 'error';
-        span.textContent = msg;
+        span.classList.add('error', 'is-hidden');
+        span.textContent = errorMessages[4];
+
         selectActivitiesLegend.parentElement.insertBefore(span, selectActivitiesLegend.nextElementSibling);
     }
 }
@@ -207,6 +216,9 @@ document.querySelector('input').focus();
 
 // Hide other title textbox
 toggleHidden(selectOtherTitle, true);
+
+// Create error messages then hide
+initializeErrorMessages();
 
 // Add classes to shirts
 initializeShirts();
@@ -389,6 +401,10 @@ selectSubmitButton.addEventListener('click', (e) => {
     // Remove default submit button behavior
     e.preventDefault();
 
+    ////////////////////
+    // Error checking //
+    ////////////////////
+
     // Credit card input selector
     const selectCreditCardSelect = selectCreditCard.querySelector('#cc-num');
     // Zip code input selector
@@ -401,15 +417,15 @@ selectSubmitButton.addEventListener('click', (e) => {
     // Case insensitive mail pattern is standard email format
     const regexEmail = /^[^@]+\@[^@.]+\.[a-z]+$/i;
 
+    // Highlight invalid other job role field in red
+    (!selectOtherTitle.classList.contains('is-hidden') && !regexName.test(selectOtherTitle.value)) ?
+        toggleInvalid(selectOtherTitle, true) : toggleInvalid(selectOtherTitle, false);
+
+    // Highlight invalid shirt design dropdown
+    (!selectDesignSelect.selectedIndex) ? console.log('Header still selected') : console.log('Any option chosen');
+
     // Activities checked counter
     let checkCount = 0;
-
-    function toggleInvalid(element, bool) {
-        // Apply red border on element
-        toggleInvalidBorder(element, bool);
-        // Apply red text to preceeding element
-        toggleInvalidText(element.previousElementSibling, bool);
-    }
 
     // Highlight invalid name field in red
     (!regexName.test(selectUserName.value)) ? toggleInvalid(selectUserName, true) : toggleInvalid(selectUserName, false);
@@ -420,8 +436,16 @@ selectSubmitButton.addEventListener('click', (e) => {
     // Highlight invalid shirt design dropdown in red
     (selectDesignSelect.selectedIndex <= 0) ? toggleInvalid(selectDesignSelect, true) : toggleInvalid(selectDesignSelect, false);
 
-    // Highlight invalid shirt color dropdown in red
-    (selectColorsSelect.selectedIndex < 0) ? toggleInvalid(selectColorsSelect, true) : toggleInvalid(selectColorsSelect, false)
+    // // Highlight invalid shirt color dropdown in red
+    // (selectColorsSelect.selectedIndex < 0) ? toggleInvalid(selectColorsSelect, true) : toggleInvalid(selectColorsSelect, false)
+
+    // Activities enabler/disabler shortcut
+    function toggleInvalid(element, bool) {
+        // Apply red border on element
+        toggleInvalidBorder(element, bool);
+        // Apply red text to preceeding element
+        toggleInvalidText(element.previousElementSibling, bool);
+    }
 
     // Search all activities
     for (let i = 0; i < selectActivitiesInputs.length; i++) {
@@ -449,6 +473,6 @@ selectSubmitButton.addEventListener('click', (e) => {
     (regexCreditCard.test(selectZipCodeSelect.value) && selectZipCodeSelect.value.length === 5) ? toggleInvalid(selectZipCodeSelect, false) :
         toggleInvalid(selectZipCodeSelect, true);
     // if CVV is not a 3 or 4 digit number
-    (regexCreditCard.test(selectCVVSelect.value) && selectCVVSelect.value.length === 3) ? toggleInvalid(selectCVVSelect, false) :
+    (regexCreditCard.test(selectCVVSelect.value) && selectCVVSelect.value.length >= 3 && selectCVVSelect.value.length <= 4) ? toggleInvalid(selectCVVSelect, false) :
         toggleInvalid(selectCVVSelect, true);
 });
