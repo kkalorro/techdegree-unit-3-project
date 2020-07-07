@@ -2,7 +2,7 @@
 // Goals //
 ///////////
 // X. Hide the "Color" label and select menu until a T-Shirt design is selected from the "Design" menu.
-// 2. Program at least one of your error messages so that more information is provided depending on the error.
+// X. Program at least one of your error messages so that more information is provided depending on the error.
     // For example, if the user hasn’t entered a credit card number and the field is completely blank, the error message reads
     // “Please enter a credit card number.” If the field isn’t empty but contains only 10 numbers, the error message reads 
     // “Please enter a number that is between 13 and 16 digits long.” 
@@ -64,12 +64,15 @@ const selectBitcoin = document.querySelector('#bitcoin');
 // Submit button selector
 const selectSubmitButton = document.querySelector('form button');
 
+// Input elements selector
+const selectInputs = document.querySelectorAll('input');
+
 // 'data-cost' sum in Activities
 let cost = 0;
 
-///////////////
-// Functions //
-///////////////
+////////////////////
+// Base Functions //
+////////////////////
 
 // Add or remove class to hide element
 toggleHidden = (element, bool) => { bool ? element.classList.add('is-hidden') : element.classList.remove('is-hidden'); };
@@ -91,79 +94,82 @@ toggleInvalidBorder = (element, bool) => {
     (bool) ? toggleHidden(element.nextElementSibling, false) : toggleHidden(element.nextElementSibling, true);
 };
 
+////////////////////////////////
+// One-time Startup Functions //
+////////////////////////////////
+
 function initializeErrorMessages() {
-    // Input elements selector
-    const selectInputs = document.querySelectorAll('input');
+
     // Container for error message
-    const msg = 'Error';
     errorMessages = [
         // Index 0: name input error
-        'Error: Must input at least 1 alphabet character.',
+        'Input at least 1 alphabet character.',
         // Index 1: mail input error
-        'Error: Must input a valid email address.',
-        // Index 2: custom job role input error
-        'Error: Must input a custom Job Role.',
-        // Index 3: shirt design error
-        'Error: Must select a Shirt Design.',
-        // Index 4: activities error
-        'Error: At least one Activity must be selected.',
-        // Index 5: credit card error
-        'Error: Credit Card numbers must contain 13 through 16 digits.',
-        // Index 6: zip code error
-        'Error: Zip code must be 5-digits.',
-        // Index 7: cvv error
-        'Error: CVV must contain 3 or 4 digits.'
+        'Valid email addresses contains an "@" and a "."',
+        // Index 2: shirt design error
+        'Must select a Shirt Design.',
+        // Index 3: activities error
+        'At least one Activity must be selected.',
+        // Index 4: credit card error
+        'Credit Card numbers must contain 13 through 16 digits.',
+        // Index 5: zip code error
+        'Zip code must be 5-digits.',
+        // Index 6: cvv error
+        'CVV must contain 3 or 4 digits.'
     ];
 
-    // Create error messages for inputs
+    // Create error element
+    function createErrorElement(errorNumber, element) {
+        // Create a span element to house the error message
+        const span = document.createElement('span');
+        span.classList.add('error', 'is-hidden');
+        span.textContent = errorMessages[errorNumber];
+
+        // Insert error element after target element
+        element.parentElement.insertBefore(span, element.nextElementSibling);
+    }
+
+    // Error messages for inputs
     for (let i = 0; i < selectInputs.length; i++) {
         // Create error message for non-checkbox inputs
         if (selectInputs[i].getAttribute('type') != 'checkbox') {
-            const span = document.createElement('span');
-            span.classList.add('error', 'is-hidden');
-
+            let errorNumber;
+            
             // Assign error message based on element's id
             switch (selectInputs[i].id) {
                 case 'name':
-                    span.textContent = errorMessages[0];
+                    errorNumber = 0;
                     break;
                 case 'mail':
-                    span.textContent = errorMessages[1];
+                    errorNumber = 1;
                     break;
                 case 'other-title':
-                    span.textContent = errorMessages[2];
+                    errorNumber = 0;
                     break;
                 case 'cc-num':
-                    span.textContent = errorMessages[5];
+                    errorNumber = 4;
                     break;
                 case 'zip':
-                span.textContent = errorMessages[6];
-                break;
+                    errorNumber = 5;
+                    break;
                 case 'cvv':
-                    span.textContent = errorMessages[7];
+                    errorNumber = 6;
                     break;
             }
 
             // Place error message after input
-            selectInputs[i].parentElement.insertBefore(span, selectInputs[i].nextElementSibling);
+            createErrorElement(errorNumber, selectInputs[i]);
         }
     }
 
     // Create error message for shirt design when no selection is chosen
     if (selectDesignSelect) {
-        const span = document.createElement('span');
-        span.classList.add('error', 'is-hidden');
-        span.textContent = errorMessages[3];
-        selectDesignSelect.parentElement.insertBefore(span, selectDesignSelect.nextElementSibling);
+        createErrorElement(2, selectDesignSelect);
     }
 
     // Create error message for activities when no boxes are checked
     if (selectActivitiesLegend) {
-        const span = document.createElement('span');
-        span.classList.add('error', 'is-hidden');
-        span.textContent = errorMessages[4];
-
-        selectActivitiesLegend.parentElement.insertBefore(span, selectActivitiesLegend.nextElementSibling);
+        createErrorElement(3, selectActivitiesLegend);
     }
 }
 
@@ -184,11 +190,12 @@ function initializeShirts() {
     }
 }
 
+//////////////////////////////////
+// Repeating Start-up Functions //
+//////////////////////////////////
+
 // Hide shirt color options and show dropdown requirements
 function resetShirtOptions() {
-
-    // Remove first child of shirt design dropdown
-    toggleHidden(selectDesignSelect.firstElementChild, true);
 
     // Remove all shirt options from select dropdown
     for (let i = 0; i < selectColorsOptions.length; i++) {
@@ -211,24 +218,26 @@ function resetPaymentDivs() {
 // Runtime //
 /////////////
 
-// Focus on the first input box
-document.querySelector('input').focus();
+
+
+// Focus on the name input box
+selectUserName.focus();
+
+// Create hidden error messages
+initializeErrorMessages();
 
 // Hide other title textbox
 toggleHidden(selectOtherTitle, true);
 
-// Create error messages then hide
-initializeErrorMessages();
-
-// Add classes to shirts
+// Categorize shirt options by assigning them classes
 initializeShirts();
+
+// Hide first descriptive option in shirt design dropdown
+toggleHidden(selectDesignSelect.firstElementChild, true);
 
 // Hide shirt colors dropdown
 toggleHidden(selectColorsLabel, true);
 toggleHidden(selectColorsSelect, true);
-
-// Initial settings for shirt
-resetShirtOptions();
 
 // Hide first option in payment dropdown
 toggleHidden(selectPaymentSelect.firstElementChild, true);
@@ -236,65 +245,12 @@ toggleHidden(selectPaymentSelect.firstElementChild, true);
 // Select credit card option from start
 selectPaymentSelect.value = 'credit card';
 
-// Hide payment info divs
-resetPaymentDivs();
-
-// Refresh payment divs
-showPaymentDivs();
+// Check whcih payment divs to show
+checkPaymentDivs();
 
 ///////////////
 // Listeners //
 ///////////////
-
-// Open the other title textbox when dropdown is set to other
-selectTitle.addEventListener('change', (e) => {
-    if (e.target.value === 'other') {
-        toggleHidden(selectOtherTitle, false);
-    } else {
-        toggleHidden(selectOtherTitle, true);
-    }
-});
-
-// Shirt color options change based on design choice
-selectDesignSelect.addEventListener('change', (e) => {
-
-    // Show colors label and dropdown
-    if (selectColorsLabel.classList.contains('is-hidden') && selectColorsSelect.classList.contains('is-hidden')) {
-        toggleHidden(selectColorsLabel, false);
-        toggleHidden(selectColorsSelect, false);
-    }
-
-    // Hide all shirt options
-    resetShirtOptions();
-
-    // Track the first visible option
-    let firstOption = null;
-
-    // Search through all the options
-    for (let i = 0; i < selectColorsOptions.length; i++) {
-        // If a pun option
-        if (e.target.value === 'js puns' && selectColorsOptions[i].classList.contains('pun')) {
-            // Save the first option's value
-            if (!firstOption) {
-                firstOption = selectColorsOptions[i].value;
-            }
-
-            // Make current option visable
-            toggleHidden(selectColorsOptions[i], false);
-        // If a heart option
-        } else if (e.target.value === 'heart js' && selectColorsOptions[i].classList.contains('heart')) {
-            // Save the first option's value
-            if (!firstOption) {
-                firstOption = selectColorsOptions[i].value;
-            }
-            
-            // Make current option visable
-            toggleHidden(selectColorsOptions[i], false);
-        }
-    }
-
-    selectColorsSelect.value = firstOption;
-});
 
 ////////////////
 // Activities //
@@ -357,18 +313,81 @@ selectActivitiesField.addEventListener('change', (e) => {
     } else if (selectActivitiesField.lastElementChild.classList.contains('is-hidden')) {
         toggleHidden(selectActivitiesField.lastElementChild, false);
     }
+
+    // Display parsed cost in $#.## format
     selectCost.textContent = costParsed.replace(regex, replacement);
+
+    // Update error checker
+    checkErrors();
+});
+
+// Open the other title textbox when dropdown is set to other
+selectTitle.addEventListener('change', (e) => {
+    if (e.target.value === 'other') {
+        toggleHidden(selectOtherTitle, false);
+    } else {
+        toggleHidden(selectOtherTitle, true);
+    }
+
+    // Update error checker
+    checkErrors();
+});
+
+// Shirt color options change based on design choice
+selectDesignSelect.addEventListener('change', (e) => {
+
+    // Show colors label and dropdown
+    if (selectColorsLabel.classList.contains('is-hidden') && selectColorsSelect.classList.contains('is-hidden')) {
+        toggleHidden(selectColorsLabel, false);
+        toggleHidden(selectColorsSelect, false);
+    }
+
+    // Hide all shirt options
+    resetShirtOptions();
+
+    // Track the first visible option
+    let firstOption = null;
+
+    // Search through all the options
+    for (let i = 0; i < selectColorsOptions.length; i++) {
+        // If a pun option
+        if (e.target.value === 'js puns' && selectColorsOptions[i].classList.contains('pun')) {
+            // Save the first option's value
+            if (!firstOption) {
+                firstOption = selectColorsOptions[i].value;
+            }
+
+            // Make current option visable
+            toggleHidden(selectColorsOptions[i], false);
+        // If a heart option
+        } else if (e.target.value === 'heart js' && selectColorsOptions[i].classList.contains('heart')) {
+            // Save the first option's value
+            if (!firstOption) {
+                firstOption = selectColorsOptions[i].value;
+            }
+            
+            // Make current option visable
+            toggleHidden(selectColorsOptions[i], false);
+        }
+    }
+
+    // Choose the first shirt color option by default
+    selectColorsSelect.value = firstOption;
+
+    // Update error check
+    checkErrors();
 });
 
 /////////////
 // Payment //
 /////////////
 
-function showPaymentDivs() {
+// Loads payment div for selected option
+function checkPaymentDivs() {
     function showDiv(div) {
-        // hide all payment divs
+        // First hide all payment divs
         resetPaymentDivs();
-        // show div
+        // Show chosen div
         toggleHidden(div, false);   
     }
 
@@ -390,20 +409,14 @@ function showPaymentDivs() {
 }
 
 selectPaymentSelect.addEventListener('change', (e) => {
-    showPaymentDivs();
+    checkPaymentDivs();
 });
 
-///////
-// Validation after submit button
-////
+////////////////////
+// Error Checking //
+////////////////////
 
-selectSubmitButton.addEventListener('click', (e) => {
-    // Remove default submit button behavior
-    e.preventDefault();
-
-    ////////////////////
-    // Error checking //
-    ////////////////////
+function checkErrors() {
 
     // Credit card input selector
     const selectCreditCardSelect = selectCreditCard.querySelector('#cc-num');
@@ -417,29 +430,13 @@ selectSubmitButton.addEventListener('click', (e) => {
     // Case insensitive mail pattern is standard email format
     const regexEmail = /^[^@]+\@[^@.]+\.[a-z]+$/i;
 
-    // Highlight invalid other job role field in red
-    (!selectOtherTitle.classList.contains('is-hidden') && !regexName.test(selectOtherTitle.value)) ?
-        toggleInvalid(selectOtherTitle, true) : toggleInvalid(selectOtherTitle, false);
-
-    // Highlight invalid shirt design dropdown
-    (!selectDesignSelect.selectedIndex) ? console.log('Header still selected') : console.log('Any option chosen');
+    // Credit card patterns are all numeric characters
+    const regexCreditCard = /^\d+$/;
 
     // Activities checked counter
     let checkCount = 0;
 
-    // Highlight invalid name field in red
-    (!regexName.test(selectUserName.value)) ? toggleInvalid(selectUserName, true) : toggleInvalid(selectUserName, false);
-
-    // Highlight invalid mail field in red
-    (!regexEmail.test(selectUserMail.value)) ? toggleInvalid(selectUserMail, true) : toggleInvalid(selectUserMail, false);
-
-    // Highlight invalid shirt design dropdown in red
-    (selectDesignSelect.selectedIndex <= 0) ? toggleInvalid(selectDesignSelect, true) : toggleInvalid(selectDesignSelect, false);
-
-    // // Highlight invalid shirt color dropdown in red
-    // (selectColorsSelect.selectedIndex < 0) ? toggleInvalid(selectColorsSelect, true) : toggleInvalid(selectColorsSelect, false)
-
-    // Activities enabler/disabler shortcut
+    // Invalid entry helper function
     function toggleInvalid(element, bool) {
         // Apply red border on element
         toggleInvalidBorder(element, bool);
@@ -447,9 +444,23 @@ selectSubmitButton.addEventListener('click', (e) => {
         toggleInvalidText(element.previousElementSibling, bool);
     }
 
-    // Search all activities
+    // Highlight invalid name field in red
+    (!regexName.test(selectUserName.value)) ? toggleInvalid(selectUserName, true) : toggleInvalid(selectUserName, false);
+
+    // Highlight invalid mail field in red
+    (!regexEmail.test(selectUserMail.value)) ? toggleInvalid(selectUserMail, true) : toggleInvalid(selectUserMail, false);
+
+    // Highlight invalid other job role field in red
+    (!selectOtherTitle.classList.contains('is-hidden') && !regexName.test(selectOtherTitle.value)) ?
+        toggleInvalid(selectOtherTitle, true) : toggleInvalid(selectOtherTitle, false);
+
+    // Highlight invalid shirt design dropdown in red
+    (!selectDesignSelect.selectedIndex) ? toggleInvalid(selectDesignSelect, true) : toggleInvalid(selectDesignSelect, false);
+
+    // Count checked activity inputs
     for (let i = 0; i < selectActivitiesInputs.length; i++) {
-        // If activity checked, increment checkCount by 1
+
+        // If activity input checked, increment checkCount by 1
         if (selectActivitiesInputs[i].checked) {
             checkCount++;
         }
@@ -462,17 +473,32 @@ selectSubmitButton.addEventListener('click', (e) => {
     (!selectPaymentSelect.selectedIndex) ? toggleInvalidText(selectPaymentSelect.previousElementSibling, true) :
         toggleInvalidText(selectPaymentSelect.previousElementSibling, false);
 
-    // Credit card patterns are all numeric characters
-    const regexCreditCard = /^\d+$/;
 
     // (Extra) Parse credit number to only digits
 
+    // Highlight credit card number field in red if not 13 to 16 digits
     (regexCreditCard.test(selectCreditCardSelect.value) && selectCreditCardSelect.value.length >= 13 && selectCreditCardSelect.value.length <= 16) ?
         toggleInvalid(selectCreditCardSelect, false) : toggleInvalid(selectCreditCardSelect, true);
-    // if zip code is not a 5 digit number
+    // Highlight zip code field in red if not 5 digits
     (regexCreditCard.test(selectZipCodeSelect.value) && selectZipCodeSelect.value.length === 5) ? toggleInvalid(selectZipCodeSelect, false) :
         toggleInvalid(selectZipCodeSelect, true);
-    // if CVV is not a 3 or 4 digit number
+    // Highlight cvv field if not 3 or 4 digit number
     (regexCreditCard.test(selectCVVSelect.value) && selectCVVSelect.value.length >= 3 && selectCVVSelect.value.length <= 4) ? toggleInvalid(selectCVVSelect, false) :
         toggleInvalid(selectCVVSelect, true);
+}
+
+// If focus is on an input
+for (let i = 0; i < selectInputs.length; i++) {
+    // Error checking on keyUp
+    selectInputs[i].addEventListener('keyup', (e) => {
+        checkErrors();
+    });
+}
+
+// Error checking on submit button
+selectSubmitButton.addEventListener('click', (e) => {
+    // Remove default submit button behavior
+    e.preventDefault();
+
+    checkErrors();
 });

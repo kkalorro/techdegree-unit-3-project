@@ -86,6 +86,11 @@ label {
 	color: #000;
 	display: block;
 	margin-bottom: .5em;
+	margin-top: .5em;
+}
+
+legend + label {
+	margin-top: 0;
 }
 
 input,
@@ -178,11 +183,12 @@ option {
 .error {
 	display: block;
 	/* background-color: khaki; */
-	color: red;
-	font-weight: bold;
-	border: 1px blue solid;
+	/* color: red; */
+	color: #083f57;
+	font-size: small;
+	/* font-weight: bold; */
+	/* border: 1px blue solid; */
 	margin-bottom: 1.125em;
-	
 }
 
 /* ================================= 
