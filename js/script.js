@@ -218,18 +218,16 @@ function resetPaymentDivs() {
 // Runtime //
 /////////////
 
+// Focus on the first input box by default
+document.querySelector('input').focus();
 
-
-// Focus on the name input box
-selectUserName.focus();
-
-// Create hidden error messages
+// Preemptively create hidden error messages
 initializeErrorMessages();
 
 // Hide other title textbox
 toggleHidden(selectOtherTitle, true);
 
-// Categorize shirt options by assigning them classes
+// Categorize shirt options with class names for easier sorting
 initializeShirts();
 
 // Hide first descriptive option in shirt design dropdown
@@ -245,7 +243,7 @@ toggleHidden(selectPaymentSelect.firstElementChild, true);
 // Select credit card option from start
 selectPaymentSelect.value = 'credit card';
 
-// Check whcih payment divs to show
+// Check which payment divs to show
 checkPaymentDivs();
 
 ///////////////
