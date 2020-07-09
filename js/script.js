@@ -534,8 +534,8 @@ selectSubmitButton.addEventListener('click', (e) => {
     // Remove default submit button behavior
     e.preventDefault();
 
-    checkErrors();
-
     // Toggle the show errors checker so errors begin checking in real-time
     isShowingErrors = true;
+
+    checkErrors();
 });
