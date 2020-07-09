@@ -69,10 +69,6 @@ toggleHidden = (element, bool) => { bool ? element.classList.add('is-hidden') : 
 toggleInvalidText = (element, bool) => { 
     // Toggle invalid class
     bool ? element.classList.add('is-invalid-text') : element.classList.remove('is-invalid-text');
-    // Toggle error message after legend elements
-    // if (element.tagName === 'LEGEND') {
-    //     (bool) ? toggleHidden(element.nextElementSibling, false) : toggleHidden(element.nextElementSibling, true);
-    // }
 };
 
 // Add or remove class to make element's border red
@@ -88,7 +84,6 @@ toggleInvalidBorder = (element, bool) => {
 ////////////////////////////////
 
 function initializeErrorMessages() {
-
     // Container for error message
     errorMessages = [
         // Index 0: name input error
@@ -251,9 +246,6 @@ resetForm();
 ////////////////
 // Activities //
 ////////////////
-
-// // Do not show array containing 'data-day-and-time' values
-// const doNotEnable = [];
 
 // Activities cost updater and schedule conflict checker
 selectActivitiesField.addEventListener('change', (e) => {
