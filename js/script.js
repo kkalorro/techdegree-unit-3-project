@@ -1,22 +1,3 @@
-///////////
-// Goals //
-///////////
-// X. Hide the "Color" label and select menu until a T-Shirt design is selected from the "Design" menu.
-// X. Program at least one of your error messages so that more information is provided depending on the error.
-    // For example, if the user hasn’t entered a credit card number and the field is completely blank, the error message reads
-    // “Please enter a credit card number.” If the field isn’t empty but contains only 10 numbers, the error message reads 
-    // “Please enter a number that is between 13 and 16 digits long.” 
-// 3. Program your form so that it provides a real-time validation error message for at least one text input field. Rather than
-    // providing an error message on submit, your form should check for errors and display messages as the user begins typing inside
-    // a text field. For example, if the user enters an invalid email address, the error appears as the user begins to type, and
-    // disappears as soon as the user has entered a complete and correctly formatted email address. You must accomplish this with your
-    // own JavaScript code. Do not rely on HTML5's built-in email validation.
-    //
-    // NOTE: If you implement the above exceeds requirements in your form, make sure you detail in your submission notes which input
-    // will have different error messages depending on the error, and which input will have "real time" validation messages, so your
-    // reviewer won't miss them by accident. 
-
-
 //////////
 // Init //
 //////////
@@ -198,6 +179,14 @@ function initializeShirts() {
     }
 }
 
+// Create a cost textbox
+function initializeCost() {
+    const costDiv = document.createElement('div');
+    costDiv.innerHTML = '<b>Total:</b> <span id="cost"></span>';
+    selectActivitiesField.appendChild(costDiv);
+    toggleHidden(selectActivitiesField.lastElementChild, true);
+}
+
 //////////////////////////////////
 // Repeating Start-up Functions //
 //////////////////////////////////
@@ -232,6 +221,9 @@ function resetForm() {
     // Categorize shirt options with class names for easier sorting
     initializeShirts();
 
+    // Create activity cost span
+    initializeCost(); 
+
     // Hide first descriptive option in shirt design dropdown
     toggleHidden(selectDesignSelect.firstElementChild, true);
 
@@ -256,27 +248,18 @@ function resetForm() {
 // Start with a default state of the form
 resetForm();
 
-///////////////
-// Listeners //
-///////////////
-
 ////////////////
 // Activities //
 ////////////////
 
-// Create a cost textbox
-const costDiv = document.createElement('div');
-costDiv.innerHTML = '<b>Total:</b> <span id="cost"></span>';
-selectActivitiesField.appendChild(costDiv);
-toggleHidden(selectActivitiesField.lastElementChild, true);
+// // Do not show array containing 'data-day-and-time' values
+// const doNotEnable = [];
 
-// Cost span selector
-const selectCost = costDiv.lastElementChild;
-
-// Do not show array containing 'data-day-and-time' values
-const doNotEnable = [];
-
+// Activities cost updater and schedule conflict checker
 selectActivitiesField.addEventListener('change', (e) => {
+
+    // Cost span selector
+    const selectCost = selectActivitiesField.lastElementChild;
 
     // Current target
     const targ = e.target;
@@ -284,11 +267,11 @@ selectActivitiesField.addEventListener('change', (e) => {
     const price = targ.getAttribute('data-cost');
     const timestamp = targ.getAttribute('data-day-and-time');
 
-    // if e.target is checked
+    // If current target is checked
     if (checked) {
         // Update cost
         cost += parseInt(price);
-        // check all other inputs for matching 'data-day-and-time'
+        // Check all other inputs for matching 'data-day-and-time'
         for (let i = 0; i < selectActivitiesInputs.length; i++) {
             if (timestamp === selectActivitiesInputs[i].getAttribute('data-day-and-time') && targ.name != selectActivitiesInputs[i].name) {
                 // disable and classify matches
@@ -299,17 +282,17 @@ selectActivitiesField.addEventListener('change', (e) => {
     } else {
         // Update cost
         cost -= parseInt(price);
-        // check all other inputs for matching 'data-day-and-time'
+        // Check all other inputs for matching 'data-day-and-time'
         for (let i = 0; i < selectActivitiesInputs.length; i++) {
             if (timestamp === selectActivitiesInputs[i].getAttribute('data-day-and-time') && targ.name != selectActivitiesInputs[i].name) {
-                // enable and classify matches
+                // Enable and classify matches
                 selectActivitiesInputs[i].disabled = false;
                 selectActivitiesInputs[i].parentElement.classList.remove('disabled');
             }
         }
     }
 
-    // Parse into $
+    // Parse into $ format
     let costParsed = cost.toString();
     const regex = /^(\d*)$/;
     const replacement = '$$$1\.00';
@@ -451,110 +434,116 @@ function parseNumbers(str) {
     return parsedStr;
 }
 
-// Parsed credit card, zip code, and cvv
+function checkErrors() {
+
+    // Check for errors only if isShowingErrors is toggled
+    if (isShowingErrors) {
+
+        // Error counter
+        let errors = 0;
+
+        // Activities checked counter
+        let checkCount = 0;
+
+        // Invalid entry helper function
+        function toggleInvalid(element, bool) {
+
+            if (element.tagName === 'LEGEND') {
+                (bool) ? toggleHidden(element.nextElementSibling, false) : toggleHidden(element.nextElementSibling, true);
+                toggleInvalidText(element, bool);
+            } else {
+                // Apply red border on element for non checkboxes
+                toggleInvalidBorder(element, bool);
+                // Apply red text to preceeding element and increment error count
+                toggleInvalidText(element.previousElementSibling, bool);
+            }
+            
+            // Increment error count
+            if (bool) {
+                errors += 1;
+            }
+        }
+
+        // Highlight invalid name field in red
+        (!regexName.test(selectUserName.value)) ? toggleInvalid(selectUserName, true) : toggleInvalid(selectUserName, false);
+
+        // Highlight invalid mail field in red
+        (!regexEmail.test(selectUserMail.value)) ? toggleInvalid(selectUserMail, true) : toggleInvalid(selectUserMail, false);
+
+        // Highlight invalid other job role field in red
+        (!selectOtherTitle.classList.contains('is-hidden') && !regexName.test(selectOtherTitle.value)) ?
+            toggleInvalid(selectOtherTitle, true) : toggleInvalid(selectOtherTitle, false);
+
+        // Highlight invalid shirt design dropdown in red
+        (!selectDesignSelect.selectedIndex) ? toggleInvalid(selectDesignSelect, true) : toggleInvalid(selectDesignSelect, false);
+
+        // Count checked activity inputs
+        for (let i = 0; i < selectActivitiesInputs.length; i++) {
+
+            // If activity input checked, increment checkCount by 1
+            if (selectActivitiesInputs[i].checked) {
+                checkCount++;
+            }
+        }
+
+        // Highlight activities field in red if no activities checked
+        (!checkCount) ? toggleInvalid(selectActivitiesLegend, true) : toggleInvalid(selectActivitiesLegend, false);
+
+        // If credit card is selected in payment dropdown
+        if (selectPaymentSelect.value === 'credit card') {
+            // Credit card number input selector
+            const selectCCInput = selectCreditCardDiv.querySelector('#cc-num');
+            // Zip input selector
+            const selectZipInput = selectCreditCardDiv.querySelector('#zip');
+            // CVV input selector
+            const selectCVVInput = selectCreditCardDiv.querySelector('#cvv');
+
+            // Highlight credit card number field in red if not 13 to 16 digits
+            (regexCreditCard.test(selectCCInput.value) && selectCCInput.value.length >= 13 && selectCCInput.value.length <= 16) ?
+                toggleInvalid(selectCCInput, false) : toggleInvalid(selectCCInput, true);
+            // Highlight zip code field in red if not 5 digits
+            (regexCreditCard.test(selectZipInput.value) && selectZipInput.value.length === 5) ? toggleInvalid(selectZipInput, false) :
+                toggleInvalid(selectZipInput, true);
+            // Highlight cvv field if not 3 or 4 digit number
+            (regexCreditCard.test(selectCVVInput.value) && selectCVVInput.value.length >= 3 && selectCVVInput.value.length <= 4) ? toggleInvalid(selectCVVInput, false) :
+                toggleInvalid(selectCVVInput, true);
+        }
+
+        // Upon no errors allow submission functionality
+        if (!errors) {
+            // Submit function(s)
+        }
+    }
+
+}
+
+// Error check on blur
 for (let i = 0; i < selectPaymentInputs.length; i++) {
     selectPaymentInputs[i].addEventListener('blur', (e) => {
-        e.target.value = parseNumbers(e.target.value);
         checkErrors();
+
+        // If a credit card field, parse numbers
+        if (e.target.id === 'cc-num' || e.target.id === 'zip' || e.target.id === 'cvv') {
+            e.target.value = parseNumbers(e.target.value);
+        }
     })
 }
 
-function checkErrors() {
-
-    // Error counter
-    let errors = 0;
-
-    // Activities checked counter
-    let checkCount = 0;
-
-    // Invalid entry helper function
-    function toggleInvalid(element, bool) {
-
-        if (element.tagName === 'LEGEND') {
-            (bool) ? toggleHidden(element.nextElementSibling, false) : toggleHidden(element.nextElementSibling, true);
-            toggleInvalidText(element, bool);
-        } else {
-            // Apply red border on element for non checkboxes
-            toggleInvalidBorder(element, bool);
-            // Apply red text to preceeding element and increment error count
-            toggleInvalidText(element.previousElementSibling, bool);
-        }
-        
-        // Increment error count
-        if (bool) {
-            errors += 1;
-        }
-    }
-
-    // Highlight invalid name field in red
-    (!regexName.test(selectUserName.value)) ? toggleInvalid(selectUserName, true) : toggleInvalid(selectUserName, false);
-
-    // Highlight invalid mail field in red
-    (!regexEmail.test(selectUserMail.value)) ? toggleInvalid(selectUserMail, true) : toggleInvalid(selectUserMail, false);
-
-    // Highlight invalid other job role field in red
-    (!selectOtherTitle.classList.contains('is-hidden') && !regexName.test(selectOtherTitle.value)) ?
-        toggleInvalid(selectOtherTitle, true) : toggleInvalid(selectOtherTitle, false);
-
-    // Highlight invalid shirt design dropdown in red
-    (!selectDesignSelect.selectedIndex) ? toggleInvalid(selectDesignSelect, true) : toggleInvalid(selectDesignSelect, false);
-
-    // Count checked activity inputs
-    for (let i = 0; i < selectActivitiesInputs.length; i++) {
-
-        // If activity input checked, increment checkCount by 1
-        if (selectActivitiesInputs[i].checked) {
-            checkCount++;
-        }
-    }
-
-    // Highlight activities field in red if no activities checked
-    (!checkCount) ? toggleInvalid(selectActivitiesLegend, true) : toggleInvalid(selectActivitiesLegend, false);
-
-    // If credit card is selected in payment dropdown
-    if (selectPaymentSelect.value === 'credit card') {
-        // Credit card number input selector
-        const selectCCInput = selectCreditCardDiv.querySelector('#cc-num');
-        // Zip input selector
-        const selectZipInput = selectCreditCardDiv.querySelector('#zip');
-        // CVV input selector
-        const selectCVVInput = selectCreditCardDiv.querySelector('#cvv');
-
-        // Highlight credit card number field in red if not 13 to 16 digits
-        (regexCreditCard.test(selectCCInput.value) && selectCCInput.value.length >= 13 && selectCCInput.value.length <= 16) ?
-            toggleInvalid(selectCCInput, false) : toggleInvalid(selectCCInput, true);
-        // Highlight zip code field in red if not 5 digits
-        (regexCreditCard.test(selectZipInput.value) && selectZipInput.value.length === 5) ? toggleInvalid(selectZipInput, false) :
-            toggleInvalid(selectZipInput, true);
-        // Highlight cvv field if not 3 or 4 digit number
-        (regexCreditCard.test(selectCVVInput.value) && selectCVVInput.value.length >= 3 && selectCVVInput.value.length <= 4) ? toggleInvalid(selectCVVInput, false) :
-            toggleInvalid(selectCVVInput, true);
-    }
-
-    // Upon no errors allow submission functionality
-    if (!errors) {
-        // Submit function(s)
-    } else {
-        console.log(errors);
-    }
-}
-
-// Upon user releasing a key on an input
+// Error check upon user releasing a key on an input
 for (let i = 0; i < selectInputs.length; i++) {
     // Error checking on keyUp
     selectInputs[i].addEventListener('keyup', (e) => {
-        if (isShowingErrors) {
-            checkErrors();
-        }
+        checkErrors();
     });
 }
 
-// Error checking on submit button
+// Error check on clicking the submit button
 selectSubmitButton.addEventListener('click', (e) => {
     // Remove default submit button behavior
     e.preventDefault();
 
     checkErrors();
 
+    // Toggle the show errors checker so errors begin checking in real-time
     isShowingErrors = true;
 });
