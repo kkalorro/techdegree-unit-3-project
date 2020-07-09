@@ -42,6 +42,9 @@ const selectColorsSelect = document.querySelector('#color');
 // Color dropdown options
 const selectColorsOptions = document.querySelectorAll('#color option');
 
+// Input elements selector
+const selectInputs = document.querySelectorAll('input');
+
 // Activities field selector
 const selectActivitiesField = document.querySelector('.activities');
 
@@ -55,20 +58,24 @@ const selectActivitiesInputs = selectActivitiesField.getElementsByTagName('input
 const selectPaymentSelect = document.querySelector('#payment');
 
 // Credit card div selector
-const selectCreditCard = document.querySelector('#credit-card');
+const selectCreditCardDiv = document.querySelector('#credit-card');
+
+    // Credit card inputs selector
+    const selectPaymentInputs = selectCreditCardDiv.querySelectorAll('.col input');
+
 // PayPal div selectordocument.querySelectorAll('input')
-const selectPayPal = document.querySelector('#paypal');
+const selectPayPalDiv = document.querySelector('#paypal');
 // Bitcoin div selector
-const selectBitcoin = document.querySelector('#bitcoin');
+const selectBitcoinDiv = document.querySelector('#bitcoin');
 
 // Submit button selector
 const selectSubmitButton = document.querySelector('form button');
 
-// Input elements selector
-const selectInputs = document.querySelectorAll('input');
-
 // 'data-cost' sum in Activities
 let cost = 0;
+
+// Tracks when to show errors and toggles to true when the submit button is pressed for the first time
+let isShowingErrors = false;
 
 ////////////////////
 // Base Functions //
@@ -79,16 +86,17 @@ toggleHidden = (element, bool) => { bool ? element.classList.add('is-hidden') : 
 
 // Add or remove class to make element's text red
 toggleInvalidText = (element, bool) => { 
+    // Toggle invalid class
     bool ? element.classList.add('is-invalid-text') : element.classList.remove('is-invalid-text');
     // Toggle error message after legend elements
-    if (element.tagName === 'LEGEND') {
-        (bool) ? toggleHidden(element.nextElementSibling, false) : toggleHidden(element.nextElementSibling, true);
-    }
-    
+    // if (element.tagName === 'LEGEND') {
+    //     (bool) ? toggleHidden(element.nextElementSibling, false) : toggleHidden(element.nextElementSibling, true);
+    // }
 };
 
 // Add or remove class to make element's border red
 toggleInvalidBorder = (element, bool) => {
+    // Toggle invalid class
     bool ? element.classList.add('is-invalid-border') : element.classList.remove('is-invalid-border');
     // Toggle error message after element
     (bool) ? toggleHidden(element.nextElementSibling, false) : toggleHidden(element.nextElementSibling, true);
@@ -173,7 +181,7 @@ function initializeErrorMessages() {
     }
 }
 
-// Initial classes for Shirts
+// Set classes for shirts on first time load
 function initializeShirts() {
     for (let i = 0; i < selectColorsOptions.length; i++) {
         // Shorthand variable for current option
@@ -201,50 +209,52 @@ function resetShirtOptions() {
     for (let i = 0; i < selectColorsOptions.length; i++) {
         toggleHidden(selectColorsOptions[i], true);
     }
-
-    // This helps with the appearance for Firefox browsers, but has undesirable affects on Chrome
-    // selectColorsSelect.style.width = '100%';
-
 }
 
 // Hide all payment fields
 function resetPaymentDivs() {
-    toggleHidden(selectCreditCard, true);
-    toggleHidden(selectPayPal, true);
-    toggleHidden(selectBitcoin, true);
+    toggleHidden(selectCreditCardDiv, true);
+    toggleHidden(selectPayPalDiv, true);
+    toggleHidden(selectBitcoinDiv, true);
+}
+
+// A predetermined starting state for the form used for on-load and potential reset button
+function resetForm() {
+    // Focus on the first input box by default
+    document.querySelector('input').focus();
+
+    // Preemptively create hidden error messages
+    initializeErrorMessages();
+
+    // Hide other title textbox
+    toggleHidden(selectOtherTitle, true);
+
+    // Categorize shirt options with class names for easier sorting
+    initializeShirts();
+
+    // Hide first descriptive option in shirt design dropdown
+    toggleHidden(selectDesignSelect.firstElementChild, true);
+
+    // Hide shirt colors dropdown
+    toggleHidden(selectColorsLabel, true);
+    toggleHidden(selectColorsSelect, true);
+
+    // Hide first option in payment dropdown
+    toggleHidden(selectPaymentSelect.firstElementChild, true);
+
+    // Select credit card option from start
+    selectPaymentSelect.value = 'credit card';
+
+    // Check which payment divs to show
+    checkPaymentDivs();
 }
 
 /////////////
 // Runtime //
 /////////////
 
-// Focus on the first input box by default
-document.querySelector('input').focus();
-
-// Preemptively create hidden error messages
-initializeErrorMessages();
-
-// Hide other title textbox
-toggleHidden(selectOtherTitle, true);
-
-// Categorize shirt options with class names for easier sorting
-initializeShirts();
-
-// Hide first descriptive option in shirt design dropdown
-toggleHidden(selectDesignSelect.firstElementChild, true);
-
-// Hide shirt colors dropdown
-toggleHidden(selectColorsLabel, true);
-toggleHidden(selectColorsSelect, true);
-
-// Hide first option in payment dropdown
-toggleHidden(selectPaymentSelect.firstElementChild, true);
-
-// Select credit card option from start
-selectPaymentSelect.value = 'credit card';
-
-// Check which payment divs to show
-checkPaymentDivs();
+// Start with a default state of the form
+resetForm();
 
 ///////////////
 // Listeners //
@@ -393,15 +403,15 @@ function checkPaymentDivs() {
     switch (selectPaymentSelect.value) {
         // credit card
         case 'credit card':
-            showDiv(selectCreditCard);
+            showDiv(selectCreditCardDiv);
             break;
         // paypal
         case 'paypal':
-            showDiv(selectPayPal);
+            showDiv(selectPayPalDiv);
             break;
         // bitcoin
         case 'bitcoin':
-            showDiv(selectBitcoin);
+            showDiv(selectBitcoinDiv);
             break;
     }
 }
@@ -413,33 +423,67 @@ selectPaymentSelect.addEventListener('change', (e) => {
 ////////////////////
 // Error Checking //
 ////////////////////
+   
+// Case insensitive name pattern is alphanumerical inputs
+const regexName = /[a-z]+/i;
+
+// Case insensitive mail pattern is standard email format
+const regexEmail = /^[^@]+\@[^@.]+\.[a-z]+$/i;
+
+// Credit card patterns are all numeric characters
+const regexCreditCard = /^\d+$/;
+
+function parseNumbers(str) {
+
+    // Regex pattern for numbers
+    const regex = /(\d*)/g;
+
+    // Regex matches from original string
+    const matchStr = str.match(regex)
+    
+    // Finished string
+    let parsedStr = '';
+
+    // Reassemble match into a single string
+    for (let i = 0; i < matchStr.length; i++) {
+        parsedStr += matchStr[i];
+    }
+    return parsedStr;
+}
+
+// Parsed credit card, zip code, and cvv
+for (let i = 0; i < selectPaymentInputs.length; i++) {
+    selectPaymentInputs[i].addEventListener('blur', (e) => {
+        e.target.value = parseNumbers(e.target.value);
+        checkErrors();
+    })
+}
 
 function checkErrors() {
 
-    // Credit card input selector
-    const selectCreditCardSelect = selectCreditCard.querySelector('#cc-num');
-    // Zip code input selector
-    const selectZipCodeSelect = selectCreditCard.querySelector('#zip');
-    // CVV input selector
-    const selectCVVSelect = selectCreditCard.querySelector('#cvv');
-    // Case insensitive name pattern is alphanumerical inputs
-    const regexName = /[a-z]+/i;
-
-    // Case insensitive mail pattern is standard email format
-    const regexEmail = /^[^@]+\@[^@.]+\.[a-z]+$/i;
-
-    // Credit card patterns are all numeric characters
-    const regexCreditCard = /^\d+$/;
+    // Error counter
+    let errors = 0;
 
     // Activities checked counter
     let checkCount = 0;
 
     // Invalid entry helper function
     function toggleInvalid(element, bool) {
-        // Apply red border on element
-        toggleInvalidBorder(element, bool);
-        // Apply red text to preceeding element
-        toggleInvalidText(element.previousElementSibling, bool);
+
+        if (element.tagName === 'LEGEND') {
+            (bool) ? toggleHidden(element.nextElementSibling, false) : toggleHidden(element.nextElementSibling, true);
+            toggleInvalidText(element, bool);
+        } else {
+            // Apply red border on element for non checkboxes
+            toggleInvalidBorder(element, bool);
+            // Apply red text to preceeding element and increment error count
+            toggleInvalidText(element.previousElementSibling, bool);
+        }
+        
+        // Increment error count
+        if (bool) {
+            errors += 1;
+        }
     }
 
     // Highlight invalid name field in red
@@ -465,31 +509,43 @@ function checkErrors() {
     }
 
     // Highlight activities field in red if no activities checked
-    (!checkCount) ? toggleInvalidText(selectActivitiesLegend, true) : toggleInvalidText(selectActivitiesLegend, false);
+    (!checkCount) ? toggleInvalid(selectActivitiesLegend, true) : toggleInvalid(selectActivitiesLegend, false);
 
-    // If payment type not selected
-    (!selectPaymentSelect.selectedIndex) ? toggleInvalidText(selectPaymentSelect.previousElementSibling, true) :
-        toggleInvalidText(selectPaymentSelect.previousElementSibling, false);
+    // If credit card is selected in payment dropdown
+    if (selectPaymentSelect.value === 'credit card') {
+        // Credit card number input selector
+        const selectCCInput = selectCreditCardDiv.querySelector('#cc-num');
+        // Zip input selector
+        const selectZipInput = selectCreditCardDiv.querySelector('#zip');
+        // CVV input selector
+        const selectCVVInput = selectCreditCardDiv.querySelector('#cvv');
 
+        // Highlight credit card number field in red if not 13 to 16 digits
+        (regexCreditCard.test(selectCCInput.value) && selectCCInput.value.length >= 13 && selectCCInput.value.length <= 16) ?
+            toggleInvalid(selectCCInput, false) : toggleInvalid(selectCCInput, true);
+        // Highlight zip code field in red if not 5 digits
+        (regexCreditCard.test(selectZipInput.value) && selectZipInput.value.length === 5) ? toggleInvalid(selectZipInput, false) :
+            toggleInvalid(selectZipInput, true);
+        // Highlight cvv field if not 3 or 4 digit number
+        (regexCreditCard.test(selectCVVInput.value) && selectCVVInput.value.length >= 3 && selectCVVInput.value.length <= 4) ? toggleInvalid(selectCVVInput, false) :
+            toggleInvalid(selectCVVInput, true);
+    }
 
-    // (Extra) Parse credit number to only digits
-
-    // Highlight credit card number field in red if not 13 to 16 digits
-    (regexCreditCard.test(selectCreditCardSelect.value) && selectCreditCardSelect.value.length >= 13 && selectCreditCardSelect.value.length <= 16) ?
-        toggleInvalid(selectCreditCardSelect, false) : toggleInvalid(selectCreditCardSelect, true);
-    // Highlight zip code field in red if not 5 digits
-    (regexCreditCard.test(selectZipCodeSelect.value) && selectZipCodeSelect.value.length === 5) ? toggleInvalid(selectZipCodeSelect, false) :
-        toggleInvalid(selectZipCodeSelect, true);
-    // Highlight cvv field if not 3 or 4 digit number
-    (regexCreditCard.test(selectCVVSelect.value) && selectCVVSelect.value.length >= 3 && selectCVVSelect.value.length <= 4) ? toggleInvalid(selectCVVSelect, false) :
-        toggleInvalid(selectCVVSelect, true);
+    // Upon no errors allow submission functionality
+    if (!errors) {
+        // Submit function(s)
+    } else {
+        console.log(errors);
+    }
 }
 
-// If focus is on an input
+// Upon user releasing a key on an input
 for (let i = 0; i < selectInputs.length; i++) {
     // Error checking on keyUp
     selectInputs[i].addEventListener('keyup', (e) => {
-        checkErrors();
+        if (isShowingErrors) {
+            checkErrors();
+        }
     });
 }
 
@@ -499,4 +555,6 @@ selectSubmitButton.addEventListener('click', (e) => {
     e.preventDefault();
 
     checkErrors();
+
+    isShowingErrors = true;
 });
