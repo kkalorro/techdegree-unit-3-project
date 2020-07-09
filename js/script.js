@@ -202,46 +202,42 @@ function resetPaymentDivs() {
     toggleHidden(selectBitcoinDiv, true);
 }
 
-// A predetermined starting state for the form used for on-load and potential reset button
-function resetForm() {
-    // Focus on the first input box by default
-    document.querySelector('input').focus();
-
-    // Preemptively create hidden error messages
-    initializeErrorMessages();
-
-    // Hide other title textbox
-    toggleHidden(selectOtherTitle, true);
-
-    // Categorize shirt options with class names for easier sorting
-    initializeShirts();
-
-    // Create activity cost span
-    initializeCost(); 
-
-    // Hide first descriptive option in shirt design dropdown
-    toggleHidden(selectDesignSelect.firstElementChild, true);
-
-    // Hide shirt colors dropdown
-    toggleHidden(selectColorsLabel, true);
-    toggleHidden(selectColorsSelect, true);
-
-    // Hide first option in payment dropdown
-    toggleHidden(selectPaymentSelect.firstElementChild, true);
-
-    // Select credit card option from start
-    selectPaymentSelect.value = 'credit card';
-
-    // Check which payment divs to show
-    checkPaymentDivs();
-}
-
 /////////////
 // Runtime //
 /////////////
 
-// Start with a default state of the form
-resetForm();
+// A predetermined starting state for the form on-load
+
+// Focus on the first input box by default
+document.querySelector('input').focus();
+
+// Preemptively create hidden error messages
+initializeErrorMessages();
+
+// Hide other title textbox
+toggleHidden(selectOtherTitle, true);
+
+// Categorize shirt options with class names for easier sorting
+initializeShirts();
+
+// Create activity cost span
+initializeCost(); 
+
+// Hide first descriptive option in shirt design dropdown
+toggleHidden(selectDesignSelect.firstElementChild, true);
+
+// Hide shirt colors dropdown
+toggleHidden(selectColorsLabel, true);
+toggleHidden(selectColorsSelect, true);
+
+// Hide first option in payment dropdown
+toggleHidden(selectPaymentSelect.firstElementChild, true);
+
+// Select credit card option from start
+selectPaymentSelect.value = 'credit card';
+
+// Check which payment divs to show
+checkPaymentDivs();
 
 ////////////////
 // Activities //
@@ -403,7 +399,7 @@ selectPaymentSelect.addEventListener('change', (e) => {
 const regexName = /[a-z]+/i;
 
 // Case insensitive mail pattern is standard email format
-const regexEmail = /^[^@]+\@[^@.]+\.[a-z]+$/i;
+const regexEmail = /^[^@]+\@[^@.]+\.[a-z]{2,3}$/i;
 
 // Credit card patterns are all numeric characters
 const regexCreditCard = /^\d+$/;
@@ -506,7 +502,6 @@ function checkErrors() {
             // Submit function(s)
         }
     }
-
 }
 
 // Error check on blur
