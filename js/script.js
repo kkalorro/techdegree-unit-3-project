@@ -89,7 +89,7 @@ function initializeErrorMessages() {
         // Index 0: name input error
         'Input at least 1 alphabet character.',
         // Index 1: mail input error
-        'Valid email addresses contains an "@" and a "."',
+        'Valid email addresses contains an "@" and a "." with a 2-3 letter suffix.',
         // Index 2: shirt design error
         'Must select a Shirt Design.',
         // Index 3: activities error
@@ -99,7 +99,7 @@ function initializeErrorMessages() {
         // Index 5: zip code error
         'Zip code must be 5-digits.',
         // Index 6: cvv error
-        'CVV must contain 3 or 4 digits.'
+        'CVV must contain 3 digits.'
     ];
 
     // Create error element
@@ -492,8 +492,8 @@ function checkErrors() {
             // Highlight zip code field in red if not 5 digits
             (regexCreditCard.test(selectZipInput.value) && selectZipInput.value.length === 5) ? toggleInvalid(selectZipInput, false) :
                 toggleInvalid(selectZipInput, true);
-            // Highlight cvv field if not 3 or 4 digit number
-            (regexCreditCard.test(selectCVVInput.value) && selectCVVInput.value.length >= 3 && selectCVVInput.value.length <= 4) ? toggleInvalid(selectCVVInput, false) :
+            // Highlight cvv field if not a 3 digit number
+            (regexCreditCard.test(selectCVVInput.value) && selectCVVInput.value.length === 3) ? toggleInvalid(selectCVVInput, false) :
                 toggleInvalid(selectCVVInput, true);
         }
 
