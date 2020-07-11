@@ -2,10 +2,7 @@
 // Init //
 //////////
 
-// User name textbox selector
-const selectUserName = document.querySelector('#name');
-// User mail textbox selector
-const selectUserMail = document.querySelector('#mail');
+
 
 // Job title dropdown selector
 const selectTitle = document.querySelector('#title');
@@ -65,97 +62,27 @@ let isShowingErrors = false;
 // Add or remove class to hide element
 toggleHidden = (element, bool) => { bool ? element.classList.add('is-hidden') : element.classList.remove('is-hidden'); };
 
-// Add or remove class to make element's text red
-toggleInvalidText = (element, bool) => { 
-    // Toggle invalid class
-    bool ? element.classList.add('is-invalid-text') : element.classList.remove('is-invalid-text');
-};
 
-// Add or remove class to make element's border red
-toggleInvalidBorder = (element, bool) => {
-    // Toggle invalid class
-    bool ? element.classList.add('is-invalid-border') : element.classList.remove('is-invalid-border');
-    // Toggle error message after element
-    (bool) ? toggleHidden(element.nextElementSibling, false) : toggleHidden(element.nextElementSibling, true);
-};
 
-////////////////////////////////
-// One-time Startup Functions //
-////////////////////////////////
+//////////////////////////
+// Other Role Functions //
+//////////////////////////
 
-function initializeErrorMessages() {
-    // Container for error message
-    errorMessages = [
-        // Index 0: name input error
-        'Input at least 1 alphabet character.',
-        // Index 1: mail input error
-        'Valid email addresses contains an "@" and a "." with a 2-3 letter suffix.',
-        // Index 2: shirt design error
-        'Must select a Shirt Design.',
-        // Index 3: activities error
-        'At least one Activity must be selected.',
-        // Index 4: credit card error
-        'Credit Card numbers must contain 13 through 16 digits.',
-        // Index 5: zip code error
-        'Zip code must be 5-digits.',
-        // Index 6: cvv error
-        'CVV must contain 3 digits.'
-    ];
-
-    // Create error element
-    function createErrorElement(errorNumber, element) {
-        // Create a span element to house the error message
-        const span = document.createElement('span');
-        span.classList.add('error', 'is-hidden');
-        span.textContent = errorMessages[errorNumber];
-
-        // Insert error element after target element
-        element.parentElement.insertBefore(span, element.nextElementSibling);
+// Open the other title textbox when dropdown is set to other
+selectTitle.addEventListener('change', (e) => {
+    if (e.target.value === 'other') {
+        toggleHidden(selectOtherTitle, false);
+    } else {
+        toggleHidden(selectOtherTitle, true);
     }
 
-    // Error messages for inputs
-    for (let i = 0; i < selectInputs.length; i++) {
-        // Create error message for non-checkbox inputs
-        if (selectInputs[i].getAttribute('type') != 'checkbox') {
-            let errorNumber;
-            
-            // Assign error message based on element's id
-            switch (selectInputs[i].id) {
-                case 'name':
-                    errorNumber = 0;
-                    break;
-                case 'mail':
-                    errorNumber = 1;
-                    break;
-                case 'other-title':
-                    errorNumber = 0;
-                    break;
-                case 'cc-num':
-                    errorNumber = 4;
-                    break;
-                case 'zip':
-                    errorNumber = 5;
-                    break;
-                case 'cvv':
-                    errorNumber = 6;
-                    break;
-            }
+    // Update error checker
+    checkErrors();
+});
 
-            // Place error message after input
-            createErrorElement(errorNumber, selectInputs[i]);
-        }
-    }
-
-    // Create error message for shirt design when no selection is chosen
-    if (selectDesignSelect) {
-        createErrorElement(2, selectDesignSelect);
-    }
-
-    // Create error message for activities when no boxes are checked
-    if (selectActivitiesLegend) {
-        createErrorElement(3, selectActivitiesLegend);
-    }
-}
+/////////////////////
+// Shirt Functions //
+/////////////////////
 
 // Set classes for shirts on first time load
 function initializeShirts() {
@@ -174,18 +101,6 @@ function initializeShirts() {
     }
 }
 
-// Create a cost textbox
-function initializeCost() {
-    const costDiv = document.createElement('div');
-    costDiv.innerHTML = '<b>Total:</b> <span id="cost"></span>';
-    selectActivitiesField.appendChild(costDiv);
-    toggleHidden(selectActivitiesField.lastElementChild, true);
-}
-
-//////////////////////////////////
-// Repeating Start-up Functions //
-//////////////////////////////////
-
 // Hide shirt color options and show dropdown requirements
 function resetShirtOptions() {
 
@@ -195,53 +110,62 @@ function resetShirtOptions() {
     }
 }
 
-// Hide all payment fields
-function resetPaymentDivs() {
-    toggleHidden(selectCreditCardDiv, true);
-    toggleHidden(selectPayPalDiv, true);
-    toggleHidden(selectBitcoinDiv, true);
-}
+// Shirt color options change based on design choice
+selectDesignSelect.addEventListener('change', (e) => {
 
-/////////////
-// Runtime //
-/////////////
+    // Show colors label and dropdown
+    if (selectColorsLabel.classList.contains('is-hidden') && selectColorsSelect.classList.contains('is-hidden')) {
+        toggleHidden(selectColorsLabel, false);
+        toggleHidden(selectColorsSelect, false);
+    }
 
-// A predetermined starting state for the form on-load
+    // Hide all shirt options
+    resetShirtOptions();
 
-// Focus on the first input box by default
-document.querySelector('input').focus();
+    // Track the first visible option
+    let firstOption = null;
 
-// Preemptively create hidden error messages
-initializeErrorMessages();
+    // Search through all the options
+    for (let i = 0; i < selectColorsOptions.length; i++) {
+        // If a pun option
+        if (e.target.value === 'js puns' && selectColorsOptions[i].classList.contains('pun')) {
+            // Save the first option's value
+            if (!firstOption) {
+                firstOption = selectColorsOptions[i].value;
+            }
 
-// Hide other title textbox
-toggleHidden(selectOtherTitle, true);
+            // Make current option visable
+            toggleHidden(selectColorsOptions[i], false);
+        // If a heart option
+        } else if (e.target.value === 'heart js' && selectColorsOptions[i].classList.contains('heart')) {
+            // Save the first option's value
+            if (!firstOption) {
+                firstOption = selectColorsOptions[i].value;
+            }
+            
+            // Make current option visable
+            toggleHidden(selectColorsOptions[i], false);
+        }
+    }
 
-// Categorize shirt options with class names for easier sorting
-initializeShirts();
+    // Choose the first shirt color option by default
+    selectColorsSelect.value = firstOption;
 
-// Create activity cost span
-initializeCost(); 
-
-// Hide first descriptive option in shirt design dropdown
-toggleHidden(selectDesignSelect.firstElementChild, true);
-
-// Hide shirt colors dropdown
-toggleHidden(selectColorsLabel, true);
-toggleHidden(selectColorsSelect, true);
-
-// Hide first option in payment dropdown
-toggleHidden(selectPaymentSelect.firstElementChild, true);
-
-// Select credit card option from start
-selectPaymentSelect.value = 'credit card';
-
-// Check which payment divs to show
-checkPaymentDivs();
+    // Update error check
+    checkErrors();
+});
 
 ////////////////
 // Activities //
 ////////////////
+
+// Create a cost textbox
+function initializeCost() {
+    const costDiv = document.createElement('div');
+    costDiv.innerHTML = '<b>Total:</b> <span id="cost"></span>';
+    selectActivitiesField.appendChild(costDiv);
+    toggleHidden(selectActivitiesField.lastElementChild, true);
+}
 
 // Activities cost updater and schedule conflict checker
 selectActivitiesField.addEventListener('change', (e) => {
@@ -300,66 +224,16 @@ selectActivitiesField.addEventListener('change', (e) => {
     checkErrors();
 });
 
-// Open the other title textbox when dropdown is set to other
-selectTitle.addEventListener('change', (e) => {
-    if (e.target.value === 'other') {
-        toggleHidden(selectOtherTitle, false);
-    } else {
-        toggleHidden(selectOtherTitle, true);
-    }
-
-    // Update error checker
-    checkErrors();
-});
-
-// Shirt color options change based on design choice
-selectDesignSelect.addEventListener('change', (e) => {
-
-    // Show colors label and dropdown
-    if (selectColorsLabel.classList.contains('is-hidden') && selectColorsSelect.classList.contains('is-hidden')) {
-        toggleHidden(selectColorsLabel, false);
-        toggleHidden(selectColorsSelect, false);
-    }
-
-    // Hide all shirt options
-    resetShirtOptions();
-
-    // Track the first visible option
-    let firstOption = null;
-
-    // Search through all the options
-    for (let i = 0; i < selectColorsOptions.length; i++) {
-        // If a pun option
-        if (e.target.value === 'js puns' && selectColorsOptions[i].classList.contains('pun')) {
-            // Save the first option's value
-            if (!firstOption) {
-                firstOption = selectColorsOptions[i].value;
-            }
-
-            // Make current option visable
-            toggleHidden(selectColorsOptions[i], false);
-        // If a heart option
-        } else if (e.target.value === 'heart js' && selectColorsOptions[i].classList.contains('heart')) {
-            // Save the first option's value
-            if (!firstOption) {
-                firstOption = selectColorsOptions[i].value;
-            }
-            
-            // Make current option visable
-            toggleHidden(selectColorsOptions[i], false);
-        }
-    }
-
-    // Choose the first shirt color option by default
-    selectColorsSelect.value = firstOption;
-
-    // Update error check
-    checkErrors();
-});
-
 /////////////
 // Payment //
 /////////////
+
+// Hide all payment fields
+function resetPaymentDivs() {
+    toggleHidden(selectCreditCardDiv, true);
+    toggleHidden(selectPayPalDiv, true);
+    toggleHidden(selectBitcoinDiv, true);
+}
 
 // Loads payment div for selected option
 function checkPaymentDivs() {
@@ -394,16 +268,40 @@ selectPaymentSelect.addEventListener('change', (e) => {
 ////////////////////
 // Error Checking //
 ////////////////////
+
+function initializeErrorSpans() {
+    // Create error element
+    function createErrorElement (element) { //(errorNumber, element) {
+        // Create a span element to house the error message
+        const span = document.createElement('span');
+        // Classify this as an error message for future tracking then hide it
+        span.classList.add('error', 'is-hidden');
+        // span.classList.add('error');
+
+        // span.textContent = errorMessages[errorNumber];
+        // span.textContent = 'test';
+
+        // Insert error span after target element
+        element.parentElement.insertBefore(span, element.nextElementSibling);
+    }
+
+    // Create error spans for non-checkbox inputs
+    for (let i = 0; i < selectInputs.length; i++) {
+        if (selectInputs[i].getAttribute('type') != 'checkbox') {
+            // Place error message after input
+            createErrorElement(selectInputs[i]);
+        }
+    }
+
+    // Create error span for shirt design dropdown
+    createErrorElement(selectDesignSelect);
+
+    // Create error span message for activities
+    createErrorElement(selectActivitiesLegend);
+}
+
+
    
-// Case insensitive name pattern is alphanumerical inputs
-const regexName = /[a-z]+/i;
-
-// Case insensitive mail pattern is standard email format
-const regexEmail = /^[^@]+\@[^@.]+\.[a-z]{2,3}$/i;
-
-// Credit card patterns are all numeric characters
-const regexCreditCard = /^\d+$/;
-
 function parseNumbers(str) {
 
     // Regex pattern for numbers
@@ -430,14 +328,13 @@ function checkErrors() {
         // Error counter
         let errors = 0;
 
-        // Activities checked counter
-        let checkCount = 0;
-
         // Invalid entry helper function
         function toggleInvalid(element, bool) {
-
+            // In the specific case of the activities legend
             if (element.tagName === 'LEGEND') {
+                // Toggle error message after legend
                 (bool) ? toggleHidden(element.nextElementSibling, false) : toggleHidden(element.nextElementSibling, true);
+                // Apply red text to preceeding element and increment error count
                 toggleInvalidText(element, bool);
             } else {
                 // Apply red border on element for non checkboxes
@@ -452,67 +349,294 @@ function checkErrors() {
             }
         }
 
-        // Highlight invalid name field in red
-        (!regexName.test(selectUserName.value)) ? toggleInvalid(selectUserName, true) : toggleInvalid(selectUserName, false);
+        // Add or remove class to make element's text red
+        function toggleInvalidText (element, bool) { 
+            // Toggle invalid class
+            bool ? element.classList.add('is-invalid-text') : element.classList.remove('is-invalid-text');
+        };
 
-        // Highlight invalid mail field in red
-        (!regexEmail.test(selectUserMail.value)) ? toggleInvalid(selectUserMail, true) : toggleInvalid(selectUserMail, false);
+        // Add or remove class to make element's border red
+        function toggleInvalidBorder (element, bool) {
+            // Toggle invalid class
+            bool ? element.classList.add('is-invalid-border') : element.classList.remove('is-invalid-border');
+            // Toggle error message after element
+            // (bool) ? toggleHidden(element.nextElementSibling, false) : toggleHidden(element.nextElementSibling, true);
+        };
 
-        // Highlight invalid other job role field in red
-        (!selectOtherTitle.classList.contains('is-hidden') && !regexName.test(selectOtherTitle.value)) ?
-            toggleInvalid(selectOtherTitle, true) : toggleInvalid(selectOtherTitle, false);
+        ////////////
+        // Inputs //
+        ////////////
 
-        // Highlight invalid shirt design dropdown in red
-        (!selectDesignSelect.selectedIndex) ? toggleInvalid(selectDesignSelect, true) : toggleInvalid(selectDesignSelect, false);
+        function validateName() {
+            // User name textbox selector
+            const selectUserName = document.querySelector('#name');
 
-        // Count checked activity inputs
-        for (let i = 0; i < selectActivitiesInputs.length; i++) {
+            // Case insensitive name pattern is alphanumerical inputs
+            const regex = /[a-z]+/i;
 
-            // If activity input checked, increment checkCount by 1
-            if (selectActivitiesInputs[i].checked) {
-                checkCount++;
+            // If field is empty
+            if (selectUserName.value === '') {
+                // Error span value = $Error
+                selectUserName.nextElementSibling.textContent = 'Field cannot be empty.';
+                // Show error span
+                toggleHidden(selectUserName.nextElementSibling, false);
+                // Highlight field
+                toggleInvalid(selectUserName, true);
+            // If field is invalid
+            } else if (!regex.test(selectUserName.value)) {
+                // toggleInvalid(selectUserName, true);
+                // Error span value = $Error
+                selectUserName.nextElementSibling.textContent = 'Field must contain at least one alphabet character.';
+                // Show error span
+                toggleHidden(selectUserName.nextElementSibling, false);
+                // Highlight field
+                toggleInvalid(selectUserName, true);
+            // If field is OK
+            } else {
+                // toggleInvalid(selectUserName, false);
+                // Hide error span
+                toggleHidden(selectUserName.nextElementSibling, true);
+                toggleInvalid(selectUserName,false);
             }
         }
 
-        // Highlight activities field in red if no activities checked
-        (!checkCount) ? toggleInvalid(selectActivitiesLegend, true) : toggleInvalid(selectActivitiesLegend, false);
+        function validateMail() {
+            // User mail textbox selector
+            const selectUserMail = document.querySelector('#mail');
 
-        // If credit card is selected in payment dropdown
-        if (selectPaymentSelect.value === 'credit card') {
-            // Credit card number input selector
-            const selectCCInput = selectCreditCardDiv.querySelector('#cc-num');
-            // Zip input selector
-            const selectZipInput = selectCreditCardDiv.querySelector('#zip');
-            // CVV input selector
-            const selectCVVInput = selectCreditCardDiv.querySelector('#cvv');
-
-            // Highlight credit card number field in red if not 13 to 16 digits
-            (regexCreditCard.test(selectCCInput.value) && selectCCInput.value.length >= 13 && selectCCInput.value.length <= 16) ?
-                toggleInvalid(selectCCInput, false) : toggleInvalid(selectCCInput, true);
-            // Highlight zip code field in red if not 5 digits
-            (regexCreditCard.test(selectZipInput.value) && selectZipInput.value.length === 5) ? toggleInvalid(selectZipInput, false) :
-                toggleInvalid(selectZipInput, true);
-            // Highlight cvv field if not a 3 digit number
-            (regexCreditCard.test(selectCVVInput.value) && selectCVVInput.value.length === 3) ? toggleInvalid(selectCVVInput, false) :
-                toggleInvalid(selectCVVInput, true);
+            // Case insensitive mail pattern is standard email format
+            const regex = /^[^@]+\@[^@.]+\.[a-z]{2,3}$/i;
+            
+            // If field is empty
+            if (selectUserMail.value === '') {
+                // Error span value = $Error
+                selectUserMail.nextElementSibling.textContent = 'Field cannot be empty.';
+                // Show error span
+                toggleHidden(selectUserMail.nextElementSibling, false);
+                // Highlight field
+                toggleInvalid(selectUserMail, true);
+            // If field is invalid
+            } else if (!regex.test(selectUserMail.value)) {
+                // toggleInvalid(selectUserName, true);
+                // Error span value = $Error
+                selectUserMail.nextElementSibling.textContent = 'Valid email addresses contains an "@" and a "." with a 2-3 letter suffix.';
+                // Show error span
+                toggleHidden(selectUserMail.nextElementSibling, false);
+                // Highlight field
+                toggleInvalid(selectUserMail, true);
+            // If field is OK
+            } else {
+                // toggleInvalid(selectUserName, false);
+                // Hide error span
+                toggleHidden(selectUserMail.nextElementSibling, true);
+                toggleInvalid(selectUserMail,false);
+            }
         }
 
-        // Upon no errors allow submission functionality
-        if (!errors) {
-            // Submit function(s)
+        function validateOtherTitle() {
+            // Case insensitive name pattern is alphanumerical inputs
+            const regex = /[a-z]+/i;
+
+            // If field is empty
+            if (!selectOtherTitle.classList.contains('is-hidden') && selectOtherTitle.value === '') {
+                // Error span value = $Error
+                selectOtherTitle.nextElementSibling.textContent = 'Field cannot be empty.';
+                // Show error span
+                toggleHidden(selectOtherTitle.nextElementSibling, false);
+                // Highlight field
+                toggleInvalid(selectOtherTitle, true);
+            // If field is invalid
+            } else if (!selectOtherTitle.classList.contains('is-hidden') && !regex.test(selectOtherTitle.value)) {
+                // toggleInvalid(selectUserName, true);
+                // Error span value = $Error
+                selectOtherTitle.nextElementSibling.textContent = 'Field must contain at least one alphabet character.';
+                // Show error span
+                toggleHidden(selectOtherTitle.nextElementSibling, false);
+                // Highlight field
+                toggleInvalid(selectOtherTitle, true);
+            // If field is OK
+            } else {
+                // toggleInvalid(selectUserName, false);
+                // Hide error span
+                toggleHidden(selectOtherTitle.nextElementSibling, true);
+                toggleInvalid(selectOtherTitle,false);
+            }
         }
+        
+        function validateShirtDesign() {
+            // If field is invalid
+            if (!selectDesignSelect.selectedIndex) {
+                // Error span value = $Error
+                selectDesignSelect.nextElementSibling.textContent = 'Must select a Shirt Design.';
+                // Show error span
+                toggleHidden(selectDesignSelect.nextElementSibling, false);
+                // Highlight field
+                toggleInvalid(selectDesignSelect, true);
+            // If field is OK
+            } else {
+                // toggleInvalid(selectUserName, false);
+                // Hide error span
+                toggleHidden(selectDesignSelect.nextElementSibling, true);
+                toggleInvalid(selectDesignSelect,false);
+            }
+        }               
+
+        function validateActivities() {
+            // Activities checked counter
+            let checkCount = 0;
+
+            // Count checked activity inputs
+            for (let i = 0; i < selectActivitiesInputs.length; i++) {
+
+                // If activity input checked, increment checkCount by 1
+                if (selectActivitiesInputs[i].checked) {
+                    checkCount++;
+                }
+            }
+
+            // If field is invalid
+            if (!checkCount) {
+                // Error span value = $Error
+                selectActivitiesLegend.nextElementSibling.textContent = 'At least one activity must be checked.';
+                // Show error span
+                toggleHidden(selectActivitiesLegend.nextElementSibling, false);
+                // Highlight field
+                toggleInvalid(selectActivitiesLegend, true);
+            // If field is OK
+            } else {
+                // toggleInvalid(selectUserName, false);
+                // Hide error span
+                toggleHidden(selectActivitiesLegend.nextElementSibling, true);
+                toggleInvalid(selectActivitiesLegend,false);
+            }
+        }
+
+        
+        // function validateCreditCard() {
+        //     if (selectPaymentSelect.value === 'credit card') {
+        //         // Credit card number input selector
+        //         const selectCCInput = selectCreditCardDiv.querySelector('#cc-num');
+        //         // Zip input selector
+        //         const regex = /^\d+$/;
+        //         // const regexLength = /^\d{13,15}$/;
+
+        //         // If field is empty
+        //         if (regex.test(selectCCInput.value === '')) {
+        //             // Error span value = $Error
+        //             selectCCInput.nextElementSibling.textContent = 'Field cannot be empty.';
+        //             // Show error span
+        //             toggleHidden(selectCCInput.nextElementSibling, false);
+        //             // Highlight field
+        //             toggleInvalid(selectCCInput, true);
+        //         // If field is invalid
+        //         } else if (regex.test(selectCCInput.value) && selectCCInput.value.length >= 13 && selectCCInput.value.length <= 16) {
+        //             // toggleInvalid(selectUserName, true);
+        //             // Error span value = $Error
+        //             selectCCInput.nextElementSibling.textContent = 'Credit Card numbers must contain 13 through 16 digits.';
+        //             // Show error span
+        //             toggleHidden(selectCCInput.nextElementSibling, false);
+        //             // Highlight field
+        //             toggleInvalid(selectCCInput, true);
+        //         // If field is OK
+        //         } else {
+        //             // toggleInvalid(selectUserName, false);
+        //             // Hide error span
+        //             toggleHidden(selectCCInput.nextElementSibling, true);
+        //             toggleInvalid(selectCCInput,false);
+        //         }
+        //     }
+        // }
+            
+        // function validateZipCode() {
+        //     if (selectPaymentSelect.value === 'credit card') {
+        //         // Zip input selector
+        //         const selectZipInput = selectCreditCardDiv.querySelector('#zip');
+        //         // Credit card patterns are all numeric characters
+        //         const regex = /^\d+$/;
+
+        //         // If field is empty
+        //         if (regex.test(selectZipInput.value) && selectZipInput.value === '') {
+        //             // Error span value = $Error
+        //             selectZipInput.nextElementSibling.textContent = 'Field cannot be empty.';
+        //             // Show error span
+        //             toggleHidden(selectZipInput.nextElementSibling, false);
+        //             // Highlight field
+        //             toggleInvalid(selectZipInput, true);
+        //         // If field is invalid
+        //         } else if (regexCreditCard.test(selectZipInput.value) && selectZipInput.value.length === 5) {
+        //             // toggleInvalid(selectUserName, true);
+        //             // Error span value = $Error
+        //             selectZipInput.nextElementSibling.textContent = 'Zip code must be 5-digits.';
+        //             // Show error span
+        //             toggleHidden(selectZipInput.nextElementSibling, false);
+        //             // Highlight field
+        //             toggleInvalid(selectZipInput, true);
+        //         // If field is OK
+        //         } else {
+        //             // toggleInvalid(selectUserName, false);
+        //             // Hide error span
+        //             toggleHidden(selectZipInput.nextElementSibling, true);
+        //             toggleInvalid(selectZipInput,false);
+        //         }
+        //     }
+        // }
+
+        // function validateCVV() {
+        //     if (selectPaymentSelect.value === 'credit card') {
+        //         // CVV input selector
+        //         const selectCVVInput = selectCreditCardDiv.querySelector('#cvv');
+        //         // Credit card patterns are all numeric characters
+        //         const regex = /^\d+$/;
+
+        //         // If field is empty
+        //         if (selectCVVInput.value === '') {
+        //             // Error span value = $Error
+        //             selectCVVInput.nextElementSibling.textContent = 'Field cannot be empty.';
+        //             // Show error span
+        //             toggleHidden(selectCVVInput.nextElementSibling, false);
+        //             // Highlight field
+        //             toggleInvalid(selectCVVInput, true);
+        //         // If field is invalid
+        //         } else if (selectCVVInput.test(selectCVVInput.value) && selectCVVInput.value.length === 3) {
+        //             // toggleInvalid(selectUserName, true);
+        //             // Error span value = $Error
+        //             selectCVVInput.nextElementSibling.textContent = 'CVV must contain 3 digits.';
+        //             // Show error span
+        //             toggleHidden(selectCVVInput.nextElementSibling, false);
+        //             // Highlight field
+        //             toggleInvalid(selectCVVInput, true);
+        //         // If field is OK
+        //         } else {
+        //             // toggleInvalid(selectUserName, false);
+        //             // Hide error span
+        //             toggleHidden(selectCVVInput.nextElementSibling, true);
+        //             toggleInvalid(selectCVVInput,false);
+        //         }
+        //     }
+        // }
+        
+        validateName();
+        validateMail();
+        validateOtherTitle();
+        validateShirtDesign();
+        validateActivities();
+        // validateCreditCard();
+        // validateZipCode();
+        // validateCVV();
+
+        return (errors) ? true : false; 
     }
 }
 
 // Error check on blur
 for (let i = 0; i < selectPaymentInputs.length; i++) {
     selectPaymentInputs[i].addEventListener('blur', (e) => {
-        checkErrors();
+        // // If a credit card field, parse numbers
+        // if (e.target.id === 'cc-num' || e.target.id === 'zip' || e.target.id === 'cvv') {
+        //     e.target.value = parseNumbers(e.target.value);
+        // }
 
-        // If a credit card field, parse numbers
-        if (e.target.id === 'cc-num' || e.target.id === 'zip' || e.target.id === 'cvv') {
-            e.target.value = parseNumbers(e.target.value);
-        }
+        checkErrors();
     })
 }
 
@@ -520,17 +644,67 @@ for (let i = 0; i < selectPaymentInputs.length; i++) {
 for (let i = 0; i < selectInputs.length; i++) {
     // Error checking on keyUp
     selectInputs[i].addEventListener('keyup', (e) => {
+        // // If a credit card field, parse numbers
+        // if (e.target.id === 'cc-num' || e.target.id === 'zip' || e.target.id === 'cvv') {
+        //     e.target.value = parseNumbers(e.target.value);
+        // }
+
         checkErrors();
     });
 }
 
 // Error check on clicking the submit button
 selectSubmitButton.addEventListener('click', (e) => {
-    // Remove default submit button behavior
-    e.preventDefault();
-
     // Toggle the show errors checker so errors begin checking in real-time
     isShowingErrors = true;
 
-    checkErrors();
+    // // If a credit card field, parse numbers
+    // if (e.target.id === 'cc-num' || e.target.id === 'zip' || e.target.id === 'cvv') {
+    //     e.target.value = parseNumbers(e.target.value);
+    // }
+
+    // Prevent default on errors
+    if (checkErrors()) {
+        console.log('errors');
+        e.preventDefault();
+    } else { 
+        console.log('no errors');
+    }
 });
+
+/////////////
+// Runtime //
+/////////////
+
+// A predetermined starting state for the form on-load
+
+// Focus on the first input box by default
+document.querySelector('input').focus();
+
+// Hide other title textbox
+toggleHidden(selectOtherTitle, true);
+
+// Categorize shirt options with class names for easier sorting
+initializeShirts();
+
+// Hide first descriptive option in shirt design dropdown
+toggleHidden(selectDesignSelect.firstElementChild, true);
+
+// Hide shirt colors dropdown
+toggleHidden(selectColorsLabel, true);
+toggleHidden(selectColorsSelect, true);
+
+// Create activity cost span
+initializeCost(); 
+
+// Hide first option in payment dropdown
+toggleHidden(selectPaymentSelect.firstElementChild, true);
+
+// Select credit card option from start
+selectPaymentSelect.value = 'credit card';
+
+// Check which payment divs to show
+checkPaymentDivs();
+
+// Preemptively create hidden error messages
+initializeErrorSpans();
