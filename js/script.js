@@ -2,15 +2,14 @@
 // Init //
 //////////
 
-// Job title dropdown selector
-const selectTitle = document.querySelector('#title');
+// Input elements selector
+const selectInputs = document.querySelectorAll('input');
+
 // Other job title textbox selector
 const selectOtherTitle = document.querySelector('#other-title');
 
 // Design dropdown selector
 const selectDesignSelect = document.querySelector('#design');
-// Design dropdown options
-const selectDesignOptions = document.querySelectorAll('#design option');
 // Colors label
 const selectColorsLabel = document.querySelector('#colors-js-puns').firstElementChild;
 // Colors dropdown selector
@@ -18,37 +17,23 @@ const selectColorsSelect = document.querySelector('#color');
 // Color dropdown options
 const selectColorsOptions = document.querySelectorAll('#color option');
 
-// Input elements selector
-const selectInputs = document.querySelectorAll('input');
-
 // Activities field selector
 const selectActivitiesField = document.querySelector('.activities');
-
 // Activities legend selector
 const selectActivitiesLegend = selectActivitiesField.firstElementChild;
-
 // Get all the inputs in selectActiviesField
 const selectActivitiesInputs = selectActivitiesField.getElementsByTagName('input');
+// The sum of 'data-cost' in each checked activity input
+let cost = 0;
 
 // Payment dropdown selector
 const selectPaymentSelect = document.querySelector('#payment');
-
 // Credit card div selector
 const selectCreditCardDiv = document.querySelector('#credit-card');
-
-    // Credit card inputs selector
-    const selectPaymentInputs = selectCreditCardDiv.querySelectorAll('.col input');
-
 // PayPal div selectordocument.querySelectorAll('input')
 const selectPayPalDiv = document.querySelector('#paypal');
 // Bitcoin div selector
 const selectBitcoinDiv = document.querySelector('#bitcoin');
-
-// Submit button selector
-const selectSubmitButton = document.querySelector('form button');
-
-// 'data-cost' sum in Activities
-let cost = 0;
 
 // Tracks when to show errors and toggles to true when the submit button is pressed for the first time
 let isShowingErrors = false;
@@ -63,6 +48,9 @@ toggleHidden = (element, bool) => { bool ? element.classList.add('is-hidden') : 
 //////////////////////////
 // Other Role Functions //
 //////////////////////////
+
+// Job title dropdown selector
+const selectTitle = document.querySelector('#title');
 
 // Open the other title textbox when dropdown is set to other
 selectTitle.addEventListener('change', (e) => {
@@ -99,7 +87,6 @@ function initializeShirts() {
 
 // Hide shirt color options and show dropdown requirements
 function resetShirtOptions() {
-
     // Remove all shirt options from select dropdown
     for (let i = 0; i < selectColorsOptions.length; i++) {
         toggleHidden(selectColorsOptions[i], true);
@@ -108,7 +95,6 @@ function resetShirtOptions() {
 
 // Shirt color options change based on design choice
 selectDesignSelect.addEventListener('change', (e) => {
-
     // Show colors label and dropdown
     if (selectColorsLabel.classList.contains('is-hidden') && selectColorsSelect.classList.contains('is-hidden')) {
         toggleHidden(selectColorsLabel, false);
@@ -129,7 +115,6 @@ selectDesignSelect.addEventListener('change', (e) => {
             if (!firstOption) {
                 firstOption = selectColorsOptions[i].value;
             }
-
             // Make current option visable
             toggleHidden(selectColorsOptions[i], false);
         // If a heart option
@@ -138,7 +123,6 @@ selectDesignSelect.addEventListener('change', (e) => {
             if (!firstOption) {
                 firstOption = selectColorsOptions[i].value;
             }
-            
             // Make current option visable
             toggleHidden(selectColorsOptions[i], false);
         }
@@ -292,7 +276,6 @@ function initializeErrorSpans() {
 }
    
 function parseNumbers(str) {
-
     // Regex pattern for numbers
     const regex = /(\d*)/g;
 
@@ -310,7 +293,6 @@ function parseNumbers(str) {
 }
 
 function checkErrors() {
-
     // Check for errors only if isShowingErrors is toggled
     if (isShowingErrors) {
 
@@ -354,94 +336,82 @@ function checkErrors() {
         // Inputs //
         ////////////
 
+        // Check an element to ensure it contains specfic value and length and pass provided error message
+        function validateTextInput(element, regexValueReq, errorMsg) {
+            // Field is valid if element contents is a specific value and length
+            if (regexValueReq.test(element.value)) {
+                // Hide error span
+                toggleHidden(element.nextElementSibling, true);
+                // Hide red highlight
+                toggleInvalid(element, false);
+            // If field is blank
+            } else if (element.value === '') {
+                // Update error message stating element contents is empty
+                element.nextElementSibling.textContent = 'Field cannot be empty.';
+                // Show error span
+                toggleHidden(element.nextElementSibling, false);
+                // Highlight field in red
+                toggleInvalid(element, true);
+            } else {
+                // Update error message to provided error string
+                element.nextElementSibling.textContent = errorMsg;
+                // Hide error span
+                toggleHidden(element.nextElementSibling, false);
+                // Highlight field in red
+                toggleInvalid(element, true);
+            }
+        }
+
+        // Check an element to ensure it contains specfic value and length and pass provided error message
+        function validatePaymentField(element, regexValueReq, regexLengthReq, errorMsg) {
+            if (selectPaymentSelect.value === 'credit card') {
+                validateTextInput(element, regexValueReq && regexLengthReq, errorMsg);
+            }
+        }
+
         function validateName() {
             // User name textbox selector
             const selectUserName = document.querySelector('#name');
-
             // Case insensitive name pattern is alphanumerical inputs
             const regex = /[a-z]+/i;
-            
 
-            // If field is empty
-            if (selectUserName.value === '') {
-                // toggleInvalid(selectUserName, true);
-                selectUserName.nextElementSibling.textContent = 'Field cannot be empty.';
-                // Show error span
-                toggleHidden(selectUserName.nextElementSibling, false);
-                // Highlight field
-                toggleInvalid(selectUserName, true);
-            // If field is invalid
-            } else if (!regex.test(selectUserName.value)) {
-                // toggleInvalid(selectUserName, false);
-                selectUserName.nextElementSibling.textContent = 'Field must contain at least one alphabet character.';
-                // Show error span
-                toggleHidden(selectUserName.nextElementSibling, false);
-                // Highlight field
-                toggleInvalid(selectUserName, true);
-            // If field is OK
-            } else {
-                // Hide error span
-                toggleHidden(selectUserName.nextElementSibling, true);
-                toggleInvalid(selectUserName,false);
-            }
+            validateTextInput(selectUserName, regex, 'Field must contain at least one alphabet character.');
         }
 
         function validateMail() {
             // User mail textbox selector
             const selectUserMail = document.querySelector('#mail');
-
             // Case insensitive mail pattern is standard email format
             const regex = /^[^@]+\@[^@.]+\.[a-z]{2,3}$/i;
-            
-            // If field is empty
-            if (selectUserMail.value === '') {
-                // Error span value = $Error
-                selectUserMail.nextElementSibling.textContent = 'Field cannot be empty.';
-                // Show error span
-                toggleHidden(selectUserMail.nextElementSibling, false);
-                // Highlight field
-                toggleInvalid(selectUserMail, true);
-            // If field is invalid
-            } else if (!regex.test(selectUserMail.value)) {
-                // Error span value = $Error
-                selectUserMail.nextElementSibling.textContent = 'Valid email addresses contains an "@" and a "." with a 2-3 letter suffix.';
-                // Show error span
-                toggleHidden(selectUserMail.nextElementSibling, false);
-                // Highlight field
-                toggleInvalid(selectUserMail, true);
-            // If field is OK
-            } else {
-                // Hide error span
-                toggleHidden(selectUserMail.nextElementSibling, true);
-                toggleInvalid(selectUserMail,false);
-            }
+
+            validateTextInput(selectUserMail, regex, 'Valid email addresses contains an "@" and a "." with a 2-3 letter suffix.');
         }
 
         function validateOtherTitle() {
             // Case insensitive name pattern is alphanumerical inputs
             const regex = /[a-z]+/i;
 
-            // If field is empty
-            if (!selectOtherTitle.classList.contains('is-hidden') && selectOtherTitle.value === '') {
-                // Update error message
+            // Field is valid if element contents is a specific value and length
+            if (regex.test(selectOtherTitle.value)) {
+                // Hide error span
+                toggleHidden(selectOtherTitle.nextElementSibling, true);
+                // Hide red highlight
+                toggleInvalid(selectOtherTitle,false);
+            // If field is blank
+            } else if (!selectOtherTitle.classList.contains('is-hidden') && selectOtherTitle.value === '') {
+                // Update error message stating element contents is empty
                 selectOtherTitle.nextElementSibling.textContent = 'Field cannot be empty.';
                 // Show error span
                 toggleHidden(selectOtherTitle.nextElementSibling, false);
-                // Highlight field
+                // Highlight field in red
                 toggleInvalid(selectOtherTitle, true);
-            // If field is invalid
-            } else if (!selectOtherTitle.classList.contains('is-hidden') && !regex.test(selectOtherTitle.value)) {
-                // Update error message
+            } else if (!selectOtherTitle.classList.contains('is-hidden')) {
+                // Update error message to provided error string
                 selectOtherTitle.nextElementSibling.textContent = 'Field must contain at least one alphabet character.';
-                // Show error span
-                toggleHidden(selectOtherTitle.nextElementSibling, false);
-                // Highlight field
-                toggleInvalid(selectOtherTitle, true);
-            // If field is OK
-            } else {
                 // Hide error span
-                toggleHidden(selectOtherTitle.nextElementSibling, true);
-                toggleInvalid(selectOtherTitle,false);
+                toggleHidden(selectOtherTitle.nextElementSibling, false);
+                // Highlight field in red
+                toggleInvalid(selectOtherTitle, true);
             }
         }
         
@@ -491,58 +461,25 @@ function checkErrors() {
             }
         }
 
-        // Check an element to ensure it contains specfic value and length and pass provided error message
-        function validatePaymentField(element, regexValueReq, regexLengthReq, errorMsg) {
-            if (selectPaymentSelect.value === 'credit card') {
-                // Field is valid if element contents is a specific value and length
-                if (regexValueReq.test(element.value) && regexLengthReq.test(element.value)) {
-                    // Hide error span
-                    toggleHidden(element.nextElementSibling, true);
-                    // Hide red highlight
-                    toggleInvalid(element, false);
-                // If field is blank
-                } else if (element.value === '') {
-                    // Update error message stating element contents is empty
-                    element.nextElementSibling.textContent = 'Field cannot be empty.';
-                    // Show error span
-                    toggleHidden(element.nextElementSibling, false);
-                    // Highlight field in red
-                    toggleInvalid(element, true);
-                } else {
-                    // Update error message to provided error string
-                    element.nextElementSibling.textContent = errorMsg;
-                    // Hide error span
-                    toggleHidden(element.nextElementSibling, false);
-                    // Highlight field in red
-                    toggleInvalid(element, true);
-                }
-            }
-        }
-
         // Validate Credit Card field
         function validateCreditCard() {
             // Credit card number input selector
             const selectCCInput = selectCreditCardDiv.querySelector('#cc-num');
-            // Credit card number value requirement in regex
-            const regex = /^\d+$/;
-            // Credit card number length in regex
-            const regexLength = /^\d{13,16}$/;
-
+            // Credit card number value requirement is 13 to 16 digits
+            const regex = /^\d{13,16}$/;
             // Check for errors and provide appropriate results
-            validatePaymentField(selectCCInput, regex, regexLength, 'Credit Card numbers must contain 13 through 16 digits.');
+            validateTextInput(selectCCInput, regex, 'Credit Card numbers must contain 13 through 16 digits.');
+
         }
         
         // Validate Zip Code field
         function validateZipCode() {
             // Zip input selector
             const selectZipInput = selectCreditCardDiv.querySelector('#zip');
-            // Zip code value requirement in regex
-            const regex = /^\d+$/;
-            // Zip code length requirement in regex
-            const regexLength = /^\d{5}$/;
-
+            // Zip code value requirement is 5 digits
+            const regex = /^\d{5}$/;
             // Check for errors and provide appropriate results
-            validatePaymentField(selectZipInput, regex, regexLength, 'Zip code must be 5-digits.');
+            validateTextInput(selectZipInput, regex, 'Zip code must be 5-digits.');
         }
 
         // Validate CVV field
@@ -550,12 +487,9 @@ function checkErrors() {
             // CVV input selector
             const selectCVVInput = selectCreditCardDiv.querySelector('#cvv');
             // CVV value requirement in regex
-            const regex = /^\d+$/;
-            // CVV length requirement in regex
-            const regexLength = /^\d{3}$/;
-
+            const regex = /^\d{3}$/;
             // Check for errors and provide appropriate results
-            validatePaymentField(selectCVVInput, regex, regexLength, 'CVV must contain 3 digits.');
+            validateTextInput(selectCVVInput, regex, 'CVV must contain 3 digits.');
         }
         
         validateName();
@@ -570,6 +504,9 @@ function checkErrors() {
         return (errors) ? true : false; 
     }
 }
+
+// Credit card inputs selector
+const selectPaymentInputs = selectCreditCardDiv.querySelectorAll('.col input');
 
 // Actions to do when removing focus from a payment element
 for (let i = 0; i < selectPaymentInputs.length; i++) {
@@ -595,6 +532,9 @@ for (let i = 0; i < selectInputs.length; i++) {
         checkErrors();
     });
 }
+
+// Submit button selector
+const selectSubmitButton = document.querySelector('form button');
 
 // Actions to do when the submit button is clicked
 selectSubmitButton.addEventListener('click', (e) => {
