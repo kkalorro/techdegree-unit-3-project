@@ -2,8 +2,6 @@
 // Init //
 //////////
 
-
-
 // Job title dropdown selector
 const selectTitle = document.querySelector('#title');
 // Other job title textbox selector
@@ -373,6 +371,7 @@ function checkErrors() {
 
             // Case insensitive name pattern is alphanumerical inputs
             const regex = /[a-z]+/i;
+            
 
             // If field is empty
             if (selectUserName.value === '') {
@@ -512,117 +511,120 @@ function checkErrors() {
         }
 
         
-        // function validateCreditCard() {
-        //     if (selectPaymentSelect.value === 'credit card') {
-        //         // Credit card number input selector
-        //         const selectCCInput = selectCreditCardDiv.querySelector('#cc-num');
-        //         // Zip input selector
-        //         const regex = /^\d+$/;
-        //         // const regexLength = /^\d{13,15}$/;
+        function validateCreditCard() {
+            if (selectPaymentSelect.value === 'credit card') {
+                // Credit card number input selector
+                const selectCCInput = selectCreditCardDiv.querySelector('#cc-num');
+                // Zip input selector
+                const regex = /^\d+$/;
+                // const regexLength = /^\d{13,15}$/;
 
-        //         // If field is empty
-        //         if (regex.test(selectCCInput.value === '')) {
-        //             // Error span value = $Error
-        //             selectCCInput.nextElementSibling.textContent = 'Field cannot be empty.';
-        //             // Show error span
-        //             toggleHidden(selectCCInput.nextElementSibling, false);
-        //             // Highlight field
-        //             toggleInvalid(selectCCInput, true);
-        //         // If field is invalid
-        //         } else if (regex.test(selectCCInput.value) && selectCCInput.value.length >= 13 && selectCCInput.value.length <= 16) {
-        //             // toggleInvalid(selectUserName, true);
-        //             // Error span value = $Error
-        //             selectCCInput.nextElementSibling.textContent = 'Credit Card numbers must contain 13 through 16 digits.';
-        //             // Show error span
-        //             toggleHidden(selectCCInput.nextElementSibling, false);
-        //             // Highlight field
-        //             toggleInvalid(selectCCInput, true);
-        //         // If field is OK
-        //         } else {
-        //             // toggleInvalid(selectUserName, false);
-        //             // Hide error span
-        //             toggleHidden(selectCCInput.nextElementSibling, true);
-        //             toggleInvalid(selectCCInput,false);
-        //         }
-        //     }
-        // }
+                // If field is empty
+                if (selectCCInput.value === '') {
+                    console.log('test1');
+                    // Error span value = $Error
+                    selectCCInput.nextElementSibling.textContent = 'Field cannot be empty.';
+                    // Show error span
+                    toggleHidden(selectCCInput.nextElementSibling, false);
+                    // Highlight field
+                    toggleInvalid(selectCCInput, true);
+                // If field is invalid
+                } else if (regex.test(selectCCInput.value) && selectCCInput.value.length >= 13 && selectCCInput.value.length <= 16) {
+                    console.log('test2');
+                    // toggleInvalid(selectUserName, true);
+                    // Error span value = $Error
+                    selectCCInput.nextElementSibling.textContent = 'Credit Card numbers must contain 13 through 16 digits.';
+                    // Show error span
+                    toggleHidden(selectCCInput.nextElementSibling, false);
+                    // Highlight field
+                    toggleInvalid(selectCCInput, true);
+                // If field is OK
+                } else {
+                    console.log('test3');
+                    // toggleInvalid(selectUserName, false);
+                    // Hide error span
+                    toggleHidden(selectCCInput.nextElementSibling, true);
+                    toggleInvalid(selectCCInput,false);
+                }
+            }
+        }
             
-        // function validateZipCode() {
-        //     if (selectPaymentSelect.value === 'credit card') {
-        //         // Zip input selector
-        //         const selectZipInput = selectCreditCardDiv.querySelector('#zip');
-        //         // Credit card patterns are all numeric characters
-        //         const regex = /^\d+$/;
+        function validateZipCode() {
+            if (selectPaymentSelect.value === 'credit card') {
+                // Zip input selector
+                const selectZipInput = selectCreditCardDiv.querySelector('#zip');
+                // Credit card patterns are all numeric characters
+                const regex = /^\d+$/;
 
-        //         // If field is empty
-        //         if (regex.test(selectZipInput.value) && selectZipInput.value === '') {
-        //             // Error span value = $Error
-        //             selectZipInput.nextElementSibling.textContent = 'Field cannot be empty.';
-        //             // Show error span
-        //             toggleHidden(selectZipInput.nextElementSibling, false);
-        //             // Highlight field
-        //             toggleInvalid(selectZipInput, true);
-        //         // If field is invalid
-        //         } else if (regexCreditCard.test(selectZipInput.value) && selectZipInput.value.length === 5) {
-        //             // toggleInvalid(selectUserName, true);
-        //             // Error span value = $Error
-        //             selectZipInput.nextElementSibling.textContent = 'Zip code must be 5-digits.';
-        //             // Show error span
-        //             toggleHidden(selectZipInput.nextElementSibling, false);
-        //             // Highlight field
-        //             toggleInvalid(selectZipInput, true);
-        //         // If field is OK
-        //         } else {
-        //             // toggleInvalid(selectUserName, false);
-        //             // Hide error span
-        //             toggleHidden(selectZipInput.nextElementSibling, true);
-        //             toggleInvalid(selectZipInput,false);
-        //         }
-        //     }
-        // }
+                // If field is empty
+                if (selectZipInput.value === '') {
+                    // Error span value = $Error
+                    selectZipInput.nextElementSibling.textContent = 'Field cannot be empty.';
+                    // Show error span
+                    toggleHidden(selectZipInput.nextElementSibling, false);
+                    // Highlight field
+                    toggleInvalid(selectZipInput, true);
+                // If field is invalid
+                } else if (regex.test(selectZipInput.value) && selectZipInput.value.length === 5) {
+                    // toggleInvalid(selectUserName, true);
+                    // Error span value = $Error
+                    selectZipInput.nextElementSibling.textContent = 'Zip code must be 5-digits.';
+                    // Show error span
+                    toggleHidden(selectZipInput.nextElementSibling, false);
+                    // Highlight field
+                    toggleInvalid(selectZipInput, true);
+                // If field is OK
+                } else {
+                    // toggleInvalid(selectUserName, false);
+                    // Hide error span
+                    toggleHidden(selectZipInput.nextElementSibling, true);
+                    toggleInvalid(selectZipInput,false);
+                }
+            }
+        }
 
-        // function validateCVV() {
-        //     if (selectPaymentSelect.value === 'credit card') {
-        //         // CVV input selector
-        //         const selectCVVInput = selectCreditCardDiv.querySelector('#cvv');
-        //         // Credit card patterns are all numeric characters
-        //         const regex = /^\d+$/;
+        function validateCVV() {
+            if (selectPaymentSelect.value === 'credit card') {
+                // CVV input selector
+                const selectCVVInput = selectCreditCardDiv.querySelector('#cvv');
+                // Credit card patterns are all numeric characters
+                const regex = /^\d+$/;
 
-        //         // If field is empty
-        //         if (selectCVVInput.value === '') {
-        //             // Error span value = $Error
-        //             selectCVVInput.nextElementSibling.textContent = 'Field cannot be empty.';
-        //             // Show error span
-        //             toggleHidden(selectCVVInput.nextElementSibling, false);
-        //             // Highlight field
-        //             toggleInvalid(selectCVVInput, true);
-        //         // If field is invalid
-        //         } else if (selectCVVInput.test(selectCVVInput.value) && selectCVVInput.value.length === 3) {
-        //             // toggleInvalid(selectUserName, true);
-        //             // Error span value = $Error
-        //             selectCVVInput.nextElementSibling.textContent = 'CVV must contain 3 digits.';
-        //             // Show error span
-        //             toggleHidden(selectCVVInput.nextElementSibling, false);
-        //             // Highlight field
-        //             toggleInvalid(selectCVVInput, true);
-        //         // If field is OK
-        //         } else {
-        //             // toggleInvalid(selectUserName, false);
-        //             // Hide error span
-        //             toggleHidden(selectCVVInput.nextElementSibling, true);
-        //             toggleInvalid(selectCVVInput,false);
-        //         }
-        //     }
-        // }
+                // If field is empty
+                if (selectCVVInput.value === '') {
+                    // Error span value = $Error
+                    selectCVVInput.nextElementSibling.textContent = 'Field cannot be empty.';
+                    // Show error span
+                    toggleHidden(selectCVVInput.nextElementSibling, false);
+                    // Highlight field
+                    toggleInvalid(selectCVVInput, true);
+                // If field is invalid
+                } else if (selectCVVInput.test(selectCVVInput.value) && selectCVVInput.value.length === 3) {
+                    // toggleInvalid(selectUserName, true);
+                    // Error span value = $Error
+                    selectCVVInput.nextElementSibling.textContent = 'CVV must contain 3 digits.';
+                    // Show error span
+                    toggleHidden(selectCVVInput.nextElementSibling, false);
+                    // Highlight field
+                    toggleInvalid(selectCVVInput, true);
+                // If field is OK
+                } else {
+                    // toggleInvalid(selectUserName, false);
+                    // Hide error span
+                    toggleHidden(selectCVVInput.nextElementSibling, true);
+                    toggleInvalid(selectCVVInput,false);
+                }
+            }
+        }
         
         validateName();
         validateMail();
         validateOtherTitle();
         validateShirtDesign();
         validateActivities();
-        // validateCreditCard();
-        // validateZipCode();
-        // validateCVV();
+        validateCreditCard();
+        validateZipCode();
+        validateCVV();
 
         return (errors) ? true : false; 
     }
