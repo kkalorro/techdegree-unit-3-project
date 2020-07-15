@@ -60,8 +60,6 @@ let isShowingErrors = false;
 // Add or remove class to hide element
 toggleHidden = (element, bool) => { bool ? element.classList.add('is-hidden') : element.classList.remove('is-hidden'); };
 
-
-
 //////////////////////////
 // Other Role Functions //
 //////////////////////////
@@ -234,7 +232,7 @@ function resetPaymentDivs() {
 }
 
 // Loads payment div for selected option
-function checkPaymentDivs() {
+function showPaymentDiv() {
     function showDiv(div) {
         // First hide all payment divs
         resetPaymentDivs();
@@ -260,7 +258,7 @@ function checkPaymentDivs() {
 }
 
 selectPaymentSelect.addEventListener('change', (e) => {
-    checkPaymentDivs();
+    showPaymentDiv();
 });
 
 ////////////////////
@@ -269,16 +267,11 @@ selectPaymentSelect.addEventListener('change', (e) => {
 
 function initializeErrorSpans() {
     // Create error element
-    function createErrorElement (element) { //(errorNumber, element) {
+    function createErrorElement (element) {
         // Create a span element to house the error message
         const span = document.createElement('span');
         // Classify this as an error message for future tracking then hide it
         span.classList.add('error', 'is-hidden');
-        // span.classList.add('error');
-
-        // span.textContent = errorMessages[errorNumber];
-        // span.textContent = 'test';
-
         // Insert error span after target element
         element.parentElement.insertBefore(span, element.nextElementSibling);
     }
@@ -297,8 +290,6 @@ function initializeErrorSpans() {
     // Create error span message for activities
     createErrorElement(selectActivitiesLegend);
 }
-
-
    
 function parseNumbers(str) {
 
@@ -357,8 +348,6 @@ function checkErrors() {
         function toggleInvalidBorder (element, bool) {
             // Toggle invalid class
             bool ? element.classList.add('is-invalid-border') : element.classList.remove('is-invalid-border');
-            // Toggle error message after element
-            // (bool) ? toggleHidden(element.nextElementSibling, false) : toggleHidden(element.nextElementSibling, true);
         };
 
         ////////////
@@ -375,7 +364,7 @@ function checkErrors() {
 
             // If field is empty
             if (selectUserName.value === '') {
-                // Error span value = $Error
+                // toggleInvalid(selectUserName, true);
                 selectUserName.nextElementSibling.textContent = 'Field cannot be empty.';
                 // Show error span
                 toggleHidden(selectUserName.nextElementSibling, false);
@@ -383,8 +372,7 @@ function checkErrors() {
                 toggleInvalid(selectUserName, true);
             // If field is invalid
             } else if (!regex.test(selectUserName.value)) {
-                // toggleInvalid(selectUserName, true);
-                // Error span value = $Error
+                // toggleInvalid(selectUserName, false);
                 selectUserName.nextElementSibling.textContent = 'Field must contain at least one alphabet character.';
                 // Show error span
                 toggleHidden(selectUserName.nextElementSibling, false);
@@ -392,7 +380,6 @@ function checkErrors() {
                 toggleInvalid(selectUserName, true);
             // If field is OK
             } else {
-                // toggleInvalid(selectUserName, false);
                 // Hide error span
                 toggleHidden(selectUserName.nextElementSibling, true);
                 toggleInvalid(selectUserName,false);
@@ -416,7 +403,6 @@ function checkErrors() {
                 toggleInvalid(selectUserMail, true);
             // If field is invalid
             } else if (!regex.test(selectUserMail.value)) {
-                // toggleInvalid(selectUserName, true);
                 // Error span value = $Error
                 selectUserMail.nextElementSibling.textContent = 'Valid email addresses contains an "@" and a "." with a 2-3 letter suffix.';
                 // Show error span
@@ -425,7 +411,6 @@ function checkErrors() {
                 toggleInvalid(selectUserMail, true);
             // If field is OK
             } else {
-                // toggleInvalid(selectUserName, false);
                 // Hide error span
                 toggleHidden(selectUserMail.nextElementSibling, true);
                 toggleInvalid(selectUserMail,false);
@@ -438,7 +423,7 @@ function checkErrors() {
 
             // If field is empty
             if (!selectOtherTitle.classList.contains('is-hidden') && selectOtherTitle.value === '') {
-                // Error span value = $Error
+                // Update error message
                 selectOtherTitle.nextElementSibling.textContent = 'Field cannot be empty.';
                 // Show error span
                 toggleHidden(selectOtherTitle.nextElementSibling, false);
@@ -446,8 +431,7 @@ function checkErrors() {
                 toggleInvalid(selectOtherTitle, true);
             // If field is invalid
             } else if (!selectOtherTitle.classList.contains('is-hidden') && !regex.test(selectOtherTitle.value)) {
-                // toggleInvalid(selectUserName, true);
-                // Error span value = $Error
+                // Update error message
                 selectOtherTitle.nextElementSibling.textContent = 'Field must contain at least one alphabet character.';
                 // Show error span
                 toggleHidden(selectOtherTitle.nextElementSibling, false);
@@ -455,7 +439,6 @@ function checkErrors() {
                 toggleInvalid(selectOtherTitle, true);
             // If field is OK
             } else {
-                // toggleInvalid(selectUserName, false);
                 // Hide error span
                 toggleHidden(selectOtherTitle.nextElementSibling, true);
                 toggleInvalid(selectOtherTitle,false);
@@ -465,7 +448,7 @@ function checkErrors() {
         function validateShirtDesign() {
             // If field is invalid
             if (!selectDesignSelect.selectedIndex) {
-                // Error span value = $Error
+                // Update error message
                 selectDesignSelect.nextElementSibling.textContent = 'Must select a Shirt Design.';
                 // Show error span
                 toggleHidden(selectDesignSelect.nextElementSibling, false);
@@ -473,7 +456,6 @@ function checkErrors() {
                 toggleInvalid(selectDesignSelect, true);
             // If field is OK
             } else {
-                // toggleInvalid(selectUserName, false);
                 // Hide error span
                 toggleHidden(selectDesignSelect.nextElementSibling, true);
                 toggleInvalid(selectDesignSelect,false);
@@ -495,7 +477,7 @@ function checkErrors() {
 
             // If field is invalid
             if (!checkCount) {
-                // Error span value = $Error
+                // Update error message
                 selectActivitiesLegend.nextElementSibling.textContent = 'At least one activity must be checked.';
                 // Show error span
                 toggleHidden(selectActivitiesLegend.nextElementSibling, false);
@@ -503,110 +485,77 @@ function checkErrors() {
                 toggleInvalid(selectActivitiesLegend, true);
             // If field is OK
             } else {
-                // toggleInvalid(selectUserName, false);
                 // Hide error span
                 toggleHidden(selectActivitiesLegend.nextElementSibling, true);
                 toggleInvalid(selectActivitiesLegend,false);
             }
         }
 
-        
+        // Check an element to ensure it contains specfic value and length and pass provided error message
+        function validatePaymentField(element, regexValueReq, regexLengthReq, errorMsg) {
+            if (selectPaymentSelect.value === 'credit card') {
+                // Field is valid if element contents is a specific value and length
+                if (regexValueReq.test(element.value) && regexLengthReq.test(element.value)) {
+                    // Hide error span
+                    toggleHidden(element.nextElementSibling, true);
+                    // Hide red highlight
+                    toggleInvalid(element, false);
+                // If field is blank
+                } else if (element.value === '') {
+                    // Update error message stating element contents is empty
+                    element.nextElementSibling.textContent = 'Field cannot be empty.';
+                    // Show error span
+                    toggleHidden(element.nextElementSibling, false);
+                    // Highlight field in red
+                    toggleInvalid(element, true);
+                } else {
+                    // Update error message to provided error string
+                    element.nextElementSibling.textContent = errorMsg;
+                    // Hide error span
+                    toggleHidden(element.nextElementSibling, false);
+                    // Highlight field in red
+                    toggleInvalid(element, true);
+                }
+            }
+        }
+
+        // Validate Credit Card field
         function validateCreditCard() {
-            if (selectPaymentSelect.value === 'credit card') {
-                // Credit card number input selector
-                const selectCCInput = selectCreditCardDiv.querySelector('#cc-num');
-                // Zip input selector
-                const regex = /^\d+$/;
-                // const regexLength = /^\d{13,15}$/;
+            // Credit card number input selector
+            const selectCCInput = selectCreditCardDiv.querySelector('#cc-num');
+            // Credit card number value requirement in regex
+            const regex = /^\d+$/;
+            // Credit card number length in regex
+            const regexLength = /^\d{13,16}$/;
 
-                // If field is valid
-                if (regex.test(selectCCInput.value) && selectCCInput.value.length >= 13 && selectCCInput.value.length <= 16) {
-                    // Show error span
-                    toggleHidden(selectCCInput.nextElementSibling, true);
-                    // Remove red highlight
-                    toggleInvalid(selectCCInput, false);
-                // If field is blank
-                } else if (selectCCInput.value === '') {
-                    // Error span value = $Error
-                    selectCCInput.nextElementSibling.textContent = 'Field cannot be empty.';
-                    // Show error span
-                    toggleHidden(selectCCInput.nextElementSibling, false);
-                    // Highlight field in red
-                    toggleInvalid(selectCCInput, true);
-                } else {
-                    // Error span value = $Error
-                    selectCCInput.nextElementSibling.textContent = 'Credit Card numbers must contain 13 through 16 digits.';
-                    // Hide error span
-                    toggleHidden(selectCCInput.nextElementSibling, false);
-                    // Highlight field in red
-                    toggleInvalid(selectCCInput, true);
-                }
-            }
+            // Check for errors and provide appropriate results
+            validatePaymentField(selectCCInput, regex, regexLength, 'Credit Card numbers must contain 13 through 16 digits.');
         }
-            
+        
+        // Validate Zip Code field
         function validateZipCode() {
+            // Zip input selector
+            const selectZipInput = selectCreditCardDiv.querySelector('#zip');
+            // Zip code value requirement in regex
+            const regex = /^\d+$/;
+            // Zip code length requirement in regex
+            const regexLength = /^\d{5}$/;
 
-            if (selectPaymentSelect.value === 'credit card') {
-                // Zip input selector
-                const selectZipInput = selectCreditCardDiv.querySelector('#zip');
-                // Credit card patterns are all numeric characters
-                const regex = /^\d+$/;
-
-                // If field is valid
-                if (regex.test(selectZipInput.value) && selectZipInput.value.length === 5) {
-                    // Show error span
-                    toggleHidden(selectZipInput.nextElementSibling, true);
-                    // Remove red highlight
-                    toggleInvalid(selectZipInput, false);
-                // If field is blank
-                } else if (selectZipInput.value === '') {
-                    // Error span value = $Error
-                    selectZipInput.nextElementSibling.textContent = 'Field cannot be empty.';
-                    // Show error span
-                    toggleHidden(selectZipInput.nextElementSibling, false);
-                    // Highlight field in red
-                    toggleInvalid(selectZipInput, true);
-                } else {
-                    // Error span value = $Error
-                    selectZipInput.nextElementSibling.textContent = 'Zip code must be 5-digits.';
-                    // Hide error span
-                    toggleHidden(selectZipInput.nextElementSibling, false);
-                    // Highlight field in red
-                    toggleInvalid(selectZipInput, true);
-                }
-            }
+            // Check for errors and provide appropriate results
+            validatePaymentField(selectZipInput, regex, regexLength, 'Zip code must be 5-digits.');
         }
 
+        // Validate CVV field
         function validateCVV() {
-            if (selectPaymentSelect.value === 'credit card') {
-                // CVV input selector
-                const selectCVVInput = selectCreditCardDiv.querySelector('#cvv');
-                // Credit card patterns are all numeric characters
-                const regex = /^\d+$/;
+            // CVV input selector
+            const selectCVVInput = selectCreditCardDiv.querySelector('#cvv');
+            // CVV value requirement in regex
+            const regex = /^\d+$/;
+            // CVV length requirement in regex
+            const regexLength = /^\d{3}$/;
 
-                // If field is valid
-                if (regex.test(selectCVVInput.value) && selectCVVInput.value.length === 3) {
-                    // Show error span
-                    toggleHidden(selectCVVInput.nextElementSibling, true);
-                    // Remove red highlight
-                    toggleInvalid(selectCVVInput, false);
-                // If field is blank
-                } else if (selectCVVInput.value === '') {
-                    // Error span value = $Error
-                    selectCVVInput.nextElementSibling.textContent = 'Field cannot be empty.';
-                    // Show error span
-                    toggleHidden(selectCVVInput.nextElementSibling, false);
-                    // Highlight field in red
-                    toggleInvalid(selectCVVInput, true);
-                } else {
-                    // Error span value = $Error
-                    selectCVVInput.nextElementSibling.textContent = 'CVV must contain 3 digits.';
-                    // Hide error span
-                    toggleHidden(selectCVVInput.nextElementSibling, false);
-                    // Highlight field in red
-                    toggleInvalid(selectCVVInput, true);
-                }
-            }
+            // Check for errors and provide appropriate results
+            validatePaymentField(selectCVVInput, regex, regexLength, 'CVV must contain 3 digits.');
         }
         
         validateName();
@@ -622,55 +571,50 @@ function checkErrors() {
     }
 }
 
-// Error check on blur
+// Actions to do when removing focus from a payment element
 for (let i = 0; i < selectPaymentInputs.length; i++) {
     selectPaymentInputs[i].addEventListener('blur', (e) => {
-        // // If a credit card field, parse numbers
-        // if (e.target.id === 'cc-num' || e.target.id === 'zip' || e.target.id === 'cvv') {
-        //     e.target.value = parseNumbers(e.target.value);
-        // }
+        // If a credit card field, remove unnecessary characters
+        if (e.target.id === 'cc-num' || e.target.id === 'zip' || e.target.id === 'cvv') {
+            e.target.value = parseNumbers(e.target.value);
+        }
 
         checkErrors();
     })
 }
 
-// Error check upon user releasing a key on an input
+// Actions to do after a key is pushed when input element is selected
 for (let i = 0; i < selectInputs.length; i++) {
     // Error checking on keyUp
     selectInputs[i].addEventListener('keyup', (e) => {
-        // // If a credit card field, parse numbers
-        // if (e.target.id === 'cc-num' || e.target.id === 'zip' || e.target.id === 'cvv') {
-        //     e.target.value = parseNumbers(e.target.value);
-        // }
+        // If a credit card field, remove unnecessary characters
+        if (e.target.id === 'cc-num' || e.target.id === 'zip' || e.target.id === 'cvv') {
+            e.target.value = parseNumbers(e.target.value);
+        }
 
         checkErrors();
     });
 }
 
-// Error check on clicking the submit button
+// Actions to do when the submit button is clicked
 selectSubmitButton.addEventListener('click', (e) => {
-    // Toggle the show errors checker so errors begin checking in real-time
+    // Allow errors to start showing on the form
     isShowingErrors = true;
 
-    // // If a credit card field, parse numbers
-    // if (e.target.id === 'cc-num' || e.target.id === 'zip' || e.target.id === 'cvv') {
-    //     e.target.value = parseNumbers(e.target.value);
-    // }
+    // If a credit card field, remove unnecessary characters
+    if (e.target.id === 'cc-num' || e.target.id === 'zip' || e.target.id === 'cvv') {
+        e.target.value = parseNumbers(e.target.value);
+    }
 
     // Prevent default on errors
     if (checkErrors()) {
-        console.log('errors');
         e.preventDefault();
-    } else { 
-        console.log('no errors');
     }
 });
 
 /////////////
 // Runtime //
 /////////////
-
-// A predetermined starting state for the form on-load
 
 // Focus on the first input box by default
 document.querySelector('input').focus();
@@ -698,7 +642,7 @@ toggleHidden(selectPaymentSelect.firstElementChild, true);
 selectPaymentSelect.value = 'credit card';
 
 // Check which payment divs to show
-checkPaymentDivs();
+showPaymentDiv();
 
 // Preemptively create hidden error messages
 initializeErrorSpans();
