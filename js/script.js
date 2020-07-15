@@ -149,10 +149,8 @@ function initializeCost() {
 
 // Activities cost updater and schedule conflict checker
 selectActivitiesField.addEventListener('change', (e) => {
-
     // Cost span selector
     const selectCost = selectActivitiesField.lastElementChild;
-
     // Current target
     const targ = e.target;
     const checked = targ.checked;
@@ -362,13 +360,6 @@ function checkErrors() {
             }
         }
 
-        // Check an element to ensure it contains specfic value and length and pass provided error message
-        function validatePaymentField(element, regexValueReq, regexLengthReq, errorMsg) {
-            if (selectPaymentSelect.value === 'credit card') {
-                validateTextInput(element, regexValueReq && regexLengthReq, errorMsg);
-            }
-        }
-
         function validateName() {
             // User name textbox selector
             const selectUserName = document.querySelector('#name');
@@ -469,7 +460,6 @@ function checkErrors() {
             const regex = /^\d{13,16}$/;
             // Check for errors and provide appropriate results
             validateTextInput(selectCCInput, regex, 'Credit Card numbers must contain 13 through 16 digits.');
-
         }
         
         // Validate Zip Code field
